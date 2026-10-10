@@ -1,0 +1,39 @@
+---
+layout: default
+title: Publications
+permalink: /publications/
+---
+<header class="page-head">
+  <div class="wrap">
+    <h1>Publications</h1>
+    <p class="lede">Papers presenting the method, the suite and its first science. Please cite the suite paper for any use of Tessera data, and the proof-of-concept paper for the emulation framework.</p>
+  </div>
+</header>
+<div class="wrap prose">
+  <h2 style="margin-top:0">Core papers</h2>
+  {% for pub in site.data.publications %}{% if pub.kind == "core" %}
+  <div class="pub">
+    <h3>{{ pub.title }}</h3>
+    <div class="authors">{{ pub.authors }} ({{ pub.year }})</div>
+    <p>{{ pub.summary }}</p>
+    <div class="links">
+      {% if pub.arxiv %}<a href="https://arxiv.org/abs/{{ pub.arxiv }}">arXiv:{{ pub.arxiv }}</a>{% endif %}
+      {% if pub.status %}<span class="tag tag-warm">{{ pub.status }}</span>{% endif %}
+    </div>
+  </div>
+  {% endif %}{% endfor %}
+  <h2>Method papers</h2>
+  {% for pub in site.data.publications %}{% if pub.kind == "method" %}
+  <div class="pub">
+    <h3>{{ pub.title }}</h3>
+    <div class="authors">{{ pub.authors }} ({{ pub.year }})</div>
+    <p>{{ pub.summary }}</p>
+    <div class="links">
+      {% if pub.arxiv %}<a href="https://arxiv.org/abs/{{ pub.arxiv }}">arXiv:{{ pub.arxiv }}</a>{% endif %}
+      {% if pub.status %}<span class="tag tag-warm">{{ pub.status }}</span>{% endif %}
+    </div>
+  </div>
+  {% endif %}{% endfor %}
+  <h2>Papers using Tessera</h2>
+  <p>None yet. If you publish with the suite, let us know and we will list it here.</p>
+</div>

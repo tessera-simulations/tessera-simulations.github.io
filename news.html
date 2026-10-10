@@ -1,0 +1,22 @@
+---
+layout: default
+title: News
+permalink: /news/
+---
+<header class="page-head">
+  <div class="wrap">
+    <h1>News</h1>
+    <p class="lede">Progress on the suite, releases and talks. Subscribe to the <a href="{{ '/news/feed.xml' | relative_url }}">feed</a>.</p>
+  </div>
+</header>
+<div class="wrap prose">
+  <ul class="news-list">
+    {% for post in site.posts %}
+    <li>
+      <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%-d %B %Y" }}</time>
+      <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+      <p>{{ post.excerpt | strip_html | truncate: 240 }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+</div>

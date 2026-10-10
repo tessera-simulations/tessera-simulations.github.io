@@ -1,0 +1,16 @@
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap bar">
+    <a class="brand" href="{{ '/' | relative_url }}" aria-label="Tessera home">
+      <img src="{{ '/assets/img/tessera-wordmark.png' | relative_url }}" alt="Tessera" width="160" height="80">
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" class="site-nav">
+      {% for item in site.data.navigation %}
+      {% assign active = false %}
+      {% if page.url == item.url or page.url contains item.url %}{% assign active = true %}{% endif %}
+      <a href="{{ item.url | relative_url }}"{% if active %} aria-current="page"{% endif %}>{{ item.title }}</a>
+      {% endfor %}
+    </nav>
+  </div>
+</header>

@@ -1,0 +1,38 @@
+- key: lovell2026b
+  title: "Tessera: composite cosmological zoom simulations for probing large effective volumes at high resolution over a range of cosmological parameters"
+  authors: Lovell C. C., Roper W. J., Lee M. E., Anglés-Alcázar D., Genel S., et al.
+  year: 2026
+  status: in preparation
+  summary: >-
+    The suite presentation paper. Describes the design, the particle-mesh parents, region selection,
+    the SWIFT zooms, and emulators for the halo mass function, concentration–mass relation and
+    maximum circular velocity distribution at z = 0.
+  kind: core
+- key: lovell2026a
+  title: "Emulating the halo mass function from composite sub-volumes: a proof of concept with Quijote"
+  authors: Lovell C. C., et al.
+  year: 2026
+  journal: arXiv e-prints
+  arxiv: "2604.17981"
+  summary: >-
+    Formalises composite zooms as an emulation problem. A conditional normalising flow for the halo
+    mass function, trained on small regions of the Quijote Big Sobol Sequence, recovers the global
+    mass function of the full box using 0.026 per cent of the simulated volume.
+  kind: core
+- key: clustering
+  title: "Two-point clustering from zoom regions alone"
+  authors: Lovell C. C., Cuesta-Lazaro C., Zhang Y., Wandelt B., Halder A., Ondaro-Mallea L., et al.
+  year: 2026
+  status: in preparation
+  summary: >-
+    Emulates the halo correlation function and power spectrum from small zoom regions, joining
+    pair counts inside each region to a perturbation-theory prediction on large scales. Validated
+    on Quijote using 0.1 per cent of the box volume.
+  kind: core
+- key: roper2026
+  title: "Zoom-in simulations with SWIFT"
+  authors: Roper W. J., et al.
+  year: 2026
+  status: in preparation
+  summary: The zoom-region gravity solver in SWIFT used to run every Tessera zoom.
+  kind: method

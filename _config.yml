@@ -1,0 +1,43 @@
+title: Tessera
+tagline: Composite zoom simulation suites for emulation and inference
+description: >-
+  Tessera is a suite of dark-matter zoom simulations, each with its own cosmology
+  and environment, that combine through emulation into predictions for
+  gigaparsec effective volumes at high resolution.
+url: "https://tessera-simulations.github.io"
+baseurl: ""
+lang: en
+contact_email: chris.lovell.astro@gmail.com
+github_org: https://github.com/tessera-simulations
+
+permalink: /news/:year/:month/:title/
+timezone: Europe/London
+markdown: kramdown
+kramdown:
+  input: GFM
+  math_engine: mathjax
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+feed:
+  path: news/feed.xml
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: page
+  - scope:
+      path: "_posts"
+      type: posts
+    values:
+      layout: post
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - vendor
+  - node_modules

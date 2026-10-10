@@ -1,0 +1,60 @@
+products:
+  - name: Suite design
+    status: planned
+    format: HDF5
+    description: >-
+      One row per parent of the 8,192-point Sobol' design, with the seven cosmological parameters,
+      the overdensity percentile anchor and the galaxy-formation parameter columns. Together with the
+      public pipeline this is enough to regenerate any subset of the suite deterministically.
+  - name: Region catalogue
+    status: planned
+    format: HDF5 and JSON
+    description: >-
+      One row per zoom with its parent, target percentile, realised overdensity, selection radius,
+      Lagrangian point cloud and the run settings used for the initial conditions.
+  - name: Parent overdensity tables
+    status: planned
+    format: HDF5
+    description: >-
+      Quantiles of the smoothed overdensity field of every parent at eight radii and fourteen epochs.
+      These are the weights with which regions are recombined into global predictions.
+  - name: Halo and subhalo catalogues
+    status: planned
+    format: HDF5
+    description: >-
+      On-the-fly friends-of-friends groups and HBT-HERONS bound subhaloes at the fourteen retained
+      snapshots, plus SOAP halo properties for the centrals.
+  - name: Merger trees
+    status: planned
+    format: HDF5
+    description: >-
+      DHalo merger trees built from all 140 outputs of each zoom, the input for the semi-analytic
+      galaxy catalogues.
+  - name: Clean-region masks
+    status: planned
+    format: HDF5
+    description: >-
+      The connected set of voxels further than 2 Mpc from any background particle, for every retained
+      snapshot, together with the mapped selection sphere that defines the counting volume.
+  - name: Galaxy catalogues
+    status: planned
+    format: HDF5
+    description: >-
+      SHARK galaxies with full star formation histories for each zoom, with additional
+      galaxy-formation parameter layers drawn from the same design.
+  - name: Photometry and spectra
+    status: planned
+    format: HDF5
+    description: Synthesizer rest-frame and observed photometry for the SHARK galaxies.
+  - name: Trained emulators
+    status: planned
+    format: Python package
+    description: >-
+      The conditional normalising flows for the halo mass function, concentration–mass relation and
+      galaxy statistics, with the integration code that produces global predictions.
+  - name: Reduced snapshots
+    status: on request
+    format: HDF5 (SWIFT)
+    description: >-
+      Fourteen particle snapshots per zoom, spaced by 0.1 dex in scale factor between z = 18.9 and
+      z = 0, with lossy compression. Around 10–40 GB per zoom.

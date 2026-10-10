@@ -1,0 +1,26 @@
+---
+layout: default
+title: People
+permalink: /people/
+---
+<header class="page-head">
+  <div class="wrap">
+    <h1>People</h1>
+    <p class="lede">Tessera is built by a collaboration spanning Cambridge, Sussex, Columbia, the Flatiron Institute, UConn, ICRAR and the Learning the Universe Simons Collaboration.</p>
+  </div>
+</header>
+<div class="wrap prose prose-wide">
+  <div class="people">
+    {% for p in site.data.people.core %}
+    <div class="person">
+      <strong>{% if p.url %}<a href="{{ p.url }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</strong>
+      <span class="role">{{ p.role }}</span>
+      <span class="aff">{{ p.affiliation }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  <h2>Codes we build on</h2>
+  <p style="max-width:46em">Every stage of the pipeline uses open-source software, and the pipeline itself will be released with the suite. We are grateful to the developers of <a href="https://github.com/eelregit/pmwd">pmwd</a>, <a href="https://bitbucket.org/ohahn/monofonic">monofonic</a>, <a href="https://swift.strw.leidenuniv.nl/">SWIFT</a>, <a href="https://github.com/SWIFTSIM/HBT-HERONS">HBT-HERONS</a>, <a href="https://github.com/SWIFTSIM/SOAP">SOAP</a>, <a href="https://github.com/ICRAR/shark">SHARK</a>, <a href="https://synthesizer-project.github.io/">Synthesizer</a>, <a href="https://camb.info/">CAMB</a> and <a href="https://jax.readthedocs.io/">JAX</a>.</p>
+  <h2>Get involved</h2>
+  <p style="max-width:46em">If you would like to use the suite before the public release, run a model on the merger trees, or extend the design, write to <a href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a>.</p>
+</div>

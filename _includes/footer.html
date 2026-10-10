@@ -1,0 +1,21 @@
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img src="{{ '/assets/img/tessera-wordmark.png' | relative_url }}" alt="Tessera" width="140" height="70" class="foot-mark">
+        <p>{{ site.tagline }}</p>
+        <p><a href="{{ site.github_org }}">GitHub</a> · <a href="mailto:{{ site.contact_email }}">Contact</a> · <a href="{{ '/news/feed.xml' | relative_url }}">News feed</a></p>
+      </div>
+      <nav class="foot-nav" aria-label="Footer">
+        {% for item in site.data.navigation %}<a href="{{ item.url | relative_url }}">{{ item.title }}</a>{% endfor %}
+      </nav>
+    </div>
+    <div class="partners">
+      <img src="{{ '/assets/img/logos/cambridge.webp' | relative_url }}" alt="University of Cambridge" height="48">
+      <img src="{{ '/assets/img/logos/kicc.webp' | relative_url }}" alt="Kavli Institute for Cosmology, Cambridge" height="48">
+      <img src="{{ '/assets/img/logos/dirac.webp' | relative_url }}" alt="DiRAC" height="36">
+      <img src="{{ '/assets/img/logos/ltu.webp' | relative_url }}" alt="Learning the Universe" height="44">
+    </div>
+    <p class="fine">Simulations run on the DiRAC COSMA facility at Durham University. &copy; {{ site.time | date: "%Y" }} the Tessera collaboration.</p>
+  </div>
+</footer>
