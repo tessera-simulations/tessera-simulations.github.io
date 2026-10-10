@@ -37,6 +37,8 @@ defaults:
 
 exclude:
   - Gemfile
+  - Gemfile.dev
+  - Gemfile.dev.lock
   - Gemfile.lock
   - README.md
   - vendor

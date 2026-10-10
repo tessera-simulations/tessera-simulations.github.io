@@ -1,0 +1,6 @@
+# Local preview without the github-pages gem:
+#   BUNDLE_GEMFILE=Gemfile.dev jekyll serve
+source "https://rubygems.org"
+gem "jekyll"
+gem "jekyll-feed"
+gem "jekyll-seo-tag"

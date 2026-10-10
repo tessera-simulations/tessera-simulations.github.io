@@ -4,3 +4,4 @@ _site/
 Gemfile.lock
 .sass-cache/
 .shots/
+Gemfile.dev.lock
