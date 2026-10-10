@@ -26,3 +26,20 @@ BUNDLE_GEMFILE=Gemfile.dev jekyll serve
 ```
 
 Then open http://localhost:4000.
+
+## Run catalogue
+
+The Data tab (`data.html`, `assets/js/catalogue.js`) is a client-side viewer over
+`assets/data/catalogue.json` (one row per design point) and
+`assets/data/layers.json` (per-run galaxy layers). Both are generated on COSMA by
+`tools/export_catalogue.py`, which joins the suite design, the regions ledger,
+`regions.json` and the files present in each zoom run directory. Refresh with
+
+```bash
+bash tools/update_catalogue.sh      # scp script to cosma7, run it, fetch the JSON
+git add assets/data && git commit -m "Update run catalogue" && git push
+```
+
+Status is inferred purely from what exists on disk, so re-running is always safe.
+Adding a column means appending to the `columns` list in the exporter and the
+matching value in `row`; the viewer reads the column list from the JSON.

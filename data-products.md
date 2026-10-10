@@ -1,9 +1,11 @@
 ---
-title: Data
-permalink: /data/
-lede: What Tessera will release, in what form, and how to get early access while the suite paper is in preparation.
+title: Data products
+permalink: /data/products/
+lede: What Tessera will release, in what form, and how to request early access while the suite paper is in preparation.
 wide: true
 ---
+
+<p class="muted"><a href="/data/">Back to the run catalogue</a></p>
 
 <div class="prose" style="padding-top:0; max-width:46em">
 <h2 style="margin-top:0">Release plan</h2>

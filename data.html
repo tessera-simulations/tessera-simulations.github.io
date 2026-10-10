@@ -1,0 +1,24 @@
+---
+layout: default
+title: Data
+permalink: /data/
+---
+<header class="page-head">
+  <div class="wrap">
+    <h1>Run catalogue</h1>
+    <p class="lede">Every design point of the v0 suite with its cosmology, selected region and pipeline status, including which galaxy-formation layers have been run on each zoom. Filter, pivot and plot the table here, or download the filtered rows as CSV.</p>
+    <p class="meta">Data products and the release plan are described on the <a href="{{ '/data/products/' | relative_url }}">Data products</a> page.</p>
+  </div>
+</header>
+<div class="wrap">
+  <div id="catalogue" class="catalogue" data-src="{{ '/assets/data/catalogue.json' | relative_url }}" data-layers="{{ '/assets/data/layers.json' | relative_url }}">
+    <p class="muted">Loading the catalogue…</p>
+  </div>
+  <div class="prose cat-help">
+    <h2>Using the catalogue</h2>
+    <p>The filter box accepts an expression over the column names, for example <code>Omega_m &gt; 0.3 and status == "archived"</code> or <code>seds_layers == n_layers</code>. Comparison and arithmetic operators, <code>and</code>, <code>or</code>, <code>not</code> and the functions <code>abs</code>, <code>log10</code>, <code>sqrt</code>, <code>min</code> and <code>max</code> are available. Column names are shown in the Columns panel; hover a column heading for its description.</p>
+    <p>The status of a run is inferred from the files present on disk, in order: <em>selected</em> (region chosen, nothing run), <em>ics</em>, <em>started</em>, <em>swift done</em>, <em>structure</em> (HBT-HERONS), <em>trees</em>, <em>masks</em>, <em>galaxies</em> (at least one SHARK layer) and <em>archived</em> (all galaxy layers and photometry complete, run packed to project space). Design points beyond the catalogued regions are <em>not selected</em>.</p>
+    <p>The pivot view cross-tabulates any two columns, so for example rows by status and columns by the number of completed SED layers show what has been run on top of each region. Open a row to see its full record and the parameters and completion state of every galaxy layer.</p>
+  </div>
+</div>
+<script src="{{ '/assets/js/catalogue.js' | relative_url }}" defer></script>
