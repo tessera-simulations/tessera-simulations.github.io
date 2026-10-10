@@ -8,7 +8,7 @@ wide: true
 <div class="prose" style="padding-top:0; max-width:46em">
 <h2 style="margin-top:0">Release plan</h2>
 <p>The first public release will accompany the suite paper and will cover the leading 1,024-point block of the design at z = 0, 1 and 2, with the trained emulators and the pipeline code. Later releases will add further blocks of the design, more redshifts, and galaxy-formation parameter layers.</p>
-<p>Until then the catalogues are available to collaborators on request. Write to <a href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a> with a sentence about what you would like to do with them.</p>
+<p>Until then the catalogues are available to collaborators on request. Write to <a href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a> describing the intended use.</p>
 <p>Data products are listed below. <span class="tag">planned</span> marks products that are produced for every zoom and will be in the first release; <span class="tag tag-grey">on request</span> marks products that are too large for a bulk release.</p>
 </div>
 
@@ -39,7 +39,7 @@ wide: true
 
 <h2>Using the data for emulation</h2>
 
-<p>The intended use of the suite is to train conditional emulators and integrate them over the overdensity distribution of a parent, which the parent overdensity tables provide for every cosmology in the design. For cosmologies outside the design an Edgeworth model of the overdensity distribution, fitted to all parents, reproduces the width of the distribution to a median of 0.3 per cent. The <a href="/emulators/">Emulators</a> page describes the models we release and the Python package that trains and integrates them.</p>
+<p>The intended use of the suite is to train conditional emulators and integrate them over the overdensity distribution of a parent, which the parent overdensity tables provide for every cosmology in the design. For cosmologies outside the design an Edgeworth model of the overdensity distribution, fitted to all parents, reproduces the width of the distribution to a median of 0.3 per cent. The trained emulators and the Python package that trains and integrates them will be released with the suite paper.</p>
 
 <h2>Pipeline code</h2>
 

@@ -4,13 +4,13 @@ title: Tessera
 body_class: home
 ---
 <section class="hero">
-  <img class="hero-img" src="{{ '/assets/img/mosaic.jpg' | relative_url }}" alt="A mosaic of 1,024 dark matter zoom simulations, each a different cosmology and environment" fetchpriority="high">
+  <img class="hero-img" src="{{ '/assets/img/mosaic.jpg' | relative_url }}" alt="A mosaic of 1,024 dark matter zoom simulations, each with a different cosmology and environment" fetchpriority="high">
   <div class="wrap">
-    <h1>Gigaparsec volumes, one tile at a time.</h1>
-    <p>Tessera is a suite of more than a thousand dark-matter zoom simulations. Each samples its own cosmology and environment. Together, through emulation, they predict the halo and galaxy population of gigaparsec volumes at a resolution no single box can afford.</p>
+    <h1>Zoom simulations across cosmology and environment.</h1>
+    <p>Tessera comprises more than a thousand dark-matter-only zoom resimulations, each with a different cosmology and large-scale environment. Emulators trained on the suite predict the halo and galaxy populations of gigaparsec volumes at a resolution that a single periodic box of that size cannot reach.</p>
     <div class="actions">
-      <a class="btn btn-primary" href="{{ '/about/' | relative_url }}">How it works</a>
-      <a class="btn btn-ghost" href="{{ '/data/' | relative_url }}">Data release</a>
+      <a class="btn btn-primary" href="{{ '/about/' | relative_url }}">About</a>
+      <a class="btn btn-ghost" href="{{ '/data/' | relative_url }}">Data</a>
     </div>
   </div>
   <div class="hero-note">The first 1,024 zooms of the suite, rendered in dark matter</div>
@@ -19,18 +19,18 @@ body_class: home
 <section class="section">
   <div class="wrap">
     <div class="section-title">
-      <h2>The suite at a glance</h2>
+      <h2>Summary</h2>
       <a href="{{ '/simulations/' | relative_url }}">Full specification</a>
     </div>
     <div class="tiles">
       <div class="tile"><div class="num">1,041</div><div class="lab">zooms completed, from a design of 8,192</div></div>
       <div class="tile"><div class="num">7</div><div class="lab">cosmological parameters varied, including w<sub>0</sub> and w<sub>a</sub></div></div>
-      <div class="tile"><div class="num">1.6 Gpc/h</div><div class="lab">parent box side, sampling the large-scale tidal field</div></div>
-      <div class="tile"><div class="num">6.5 × 10<sup>8</sup></div><div class="lab">M<sub>&#x2609;</sub>/h particle mass in the zooms, 512× finer than the parent</div></div>
-      <div class="tile"><div class="num">140</div><div class="lab">snapshots per zoom, enough for high-fidelity merger trees</div></div>
+      <div class="tile"><div class="num">1.6 Gpc/h</div><div class="lab">parent box side</div></div>
+      <div class="tile"><div class="num">6.5 × 10<sup>8</sup></div><div class="lab">M<sub>&#x2609;</sub>/h particle mass in the zooms, 512 times below the parent</div></div>
+      <div class="tile"><div class="num">140</div><div class="lab">snapshots per zoom, from z = 23.4 to z = 0</div></div>
       <div class="tile"><div class="num">10<sup>11</sup>–10<sup>15</sup></div><div class="lab">M<sub>&#x2609;</sub>/h emulated halo mass range at z = 0</div></div>
-      <div class="tile"><div class="num">~10<sup>6</sup></div><div class="lab">core-hours for the whole suite so far</div></div>
-      <div class="tile"><div class="num">1 node</div><div class="lab">per zoom, so the suite runs as a simple job array</div></div>
+      <div class="tile"><div class="num">~10<sup>6</sup></div><div class="lab">core-hours for the suite to date</div></div>
+      <div class="tile"><div class="num">1 node</div><div class="lab">per zoom, 28 cores and under 64 GB of memory</div></div>
     </div>
   </div>
 </section>
@@ -38,29 +38,29 @@ body_class: home
 <section class="section">
   <div class="wrap">
     <div class="section-title">
-      <h2>How it works</h2>
-      <a href="{{ '/about/' | relative_url }}">Read the full description</a>
+      <h2>Method</h2>
+      <a href="{{ '/about/' | relative_url }}">Full description</a>
     </div>
     <div class="steps">
       <div class="step">
         <img src="{{ '/assets/img/parent_render.webp' | relative_url }}" alt="Projected dark matter density of a particle-mesh parent volume" loading="lazy">
-        <div class="body"><h3>Parents</h3><p>A low-resolution particle-mesh volume is run for every point in a Sobol' design over cosmology. Each takes about ten minutes on one GPU and is kept only as a density field.</p></div>
+        <div class="body"><h3>Parents</h3><p>A low-resolution particle-mesh volume is run for every point in a Sobol' design over cosmology. Each takes about ten minutes on one GPU and is retained only as a density field.</p></div>
       </div>
       <div class="step">
         <img class="plot" src="{{ '/assets/img/figures/region_selection.webp' | relative_url }}" alt="A region selected in a parent, traced back to its Lagrangian patch in the initial conditions" loading="lazy">
-        <div class="body"><h3>Regions</h3><p>One sphere is selected per parent at a prescribed percentile of that parent's overdensity distribution, so cosmology and environment are sampled jointly rather than on a grid.</p></div>
+        <div class="body"><h3>Regions</h3><p>One sphere is selected per parent at a prescribed percentile of that parent's overdensity distribution, so that cosmology and environment are sampled jointly.</p></div>
       </div>
       <div class="step">
         <img src="{{ '/assets/img/zoom_cutout.webp' | relative_url }}" alt="Dark matter in a SWIFT zoom resimulation of one region" loading="lazy">
-        <div class="body"><h3>Zooms</h3><p>Each region is resimulated with SWIFT at 512 times the parent's mass resolution, retaining the full box at low resolution so the large-scale tides are preserved.</p></div>
+        <div class="body"><h3>Zooms</h3><p>Each region is resimulated with SWIFT at 512 times the mass resolution of the parent. The remainder of the box is retained at low resolution to preserve the large-scale tidal field.</p></div>
       </div>
       <div class="step">
         <img class="plot" src="{{ '/assets/img/figures/gsmf_suite_z0_z2.webp' | relative_url }}" alt="Galaxy stellar mass functions across the suite from the SHARK semi-analytic model" loading="lazy">
-        <div class="body"><h3>Galaxies</h3><p>Merger trees from all 140 outputs feed the SHARK semi-analytic model, and Synthesizer forward-models the emission, so galaxies can be selected the way surveys select them.</p></div>
+        <div class="body"><h3>Galaxies</h3><p>Merger trees built from all 140 outputs are passed to the SHARK semi-analytic model, and Synthesizer forward-models the emission of the resulting galaxies.</p></div>
       </div>
       <div class="step">
         <img class="plot" src="{{ '/assets/img/figures/hmf_global_fof_z0.webp' | relative_url }}" alt="Global halo mass functions recovered by integrating the emulator over the parent overdensity distribution" loading="lazy">
-        <div class="body"><h3>Emulation</h3><p>Conditional normalising flows learn each statistic as a function of cosmology and environment. Integrating over the parent's overdensity distribution recovers the global prediction.</p></div>
+        <div class="body"><h3>Emulation</h3><p>Conditional normalising flows model each statistic as a function of cosmology and environment. Integrating over the overdensity distribution of the parent gives the global prediction.</p></div>
       </div>
     </div>
   </div>
@@ -69,18 +69,17 @@ body_class: home
 <section class="section">
   <div class="wrap">
     <div class="section-title">
-      <h2>Where Tessera sits</h2>
-      <a href="{{ '/results/' | relative_url }}">More results</a>
+      <h2>Context</h2>
     </div>
     <div class="split">
       <figure class="fig">
         <a href="{{ '/assets/img/figures/resolution_volume.webp' | relative_url }}"><img src="{{ '/assets/img/figures/resolution_volume.webp' | relative_url }}" alt="Periodic cosmological simulations since 2010 on the resolution–volume plane, with Tessera placed at the volume of a single parent and the particle mass of its zooms" loading="lazy"></a>
-        <figcaption>Cosmological simulations since 2010 on the resolution–volume plane. Tessera reaches the regime of the largest single-cosmology N-body runs, but across a continuous range of cosmologies.</figcaption>
+        <figcaption>Cosmological simulations since 2010 on the resolution–volume plane. Tessera is placed at the volume of one parent and the particle mass of its zooms.</figcaption>
       </figure>
       <div>
-        <p>Wide-field surveys such as Euclid, DESI, Rubin and Roman measure billions of galaxies over gigaparsec volumes. Interpreting their clustering needs simulations that are large enough to contain the rare haloes hosting luminous red galaxies and quasars, resolved enough to follow the lower-mass haloes hosting emission-line galaxies, and numerous enough to span cosmological and galaxy-formation parameter space.</p>
-        <p>No periodic suite does all three. Tessera trades a monolithic box for a mosaic of small, high-resolution regions whose combination is learned rather than simulated, at roughly the cost per cosmology of a standard-resolution Quijote box while resolving haloes three orders of magnitude less massive.</p>
-        <a class="btn btn-outline" href="{{ '/about/' | relative_url }}">Why composite zooms</a>
+        <p>Wide-field surveys such as Euclid, DESI, Rubin and Roman will measure billions of galaxies over gigaparsec volumes. Interpreting their clustering requires simulations that are large enough to contain the rare haloes hosting luminous red galaxies and quasars, resolved enough to follow the lower-mass haloes hosting emission-line galaxies, and numerous enough to span cosmological and galaxy-formation parameter space.</p>
+        <p>No existing periodic suite satisfies all three requirements. Tessera instead combines many small, high-resolution regions, with the combination learned by emulation rather than simulated directly. The cost per cosmology is comparable to that of a standard-resolution Quijote box, while the resolved halo mass is three orders of magnitude lower.</p>
+        <a class="btn btn-outline" href="{{ '/about/' | relative_url }}">About the method</a>
       </div>
     </div>
   </div>

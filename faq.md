@@ -1,13 +1,13 @@
 ---
 title: FAQ
 permalink: /faq/
-lede: Short answers to the questions we are asked most often.
+lede: Common questions about the suite.
 body_class: faq
 ---
 
 <details>
 <summary>What does the name mean?</summary>
-<p>A tessera is a single tile in a mosaic. Each zoom in the suite is a small tile; the picture only appears when they are combined.</p>
+<p>A tessera is a single tile in a mosaic. Each zoom in the suite is one such tile, and global predictions are obtained only by combining them.</p>
 </details>
 
 <details>
@@ -32,7 +32,7 @@ body_class: faq
 
 <details>
 <summary>Can I measure clustering in the zooms?</summary>
-<p>Pairs can be counted inside each region, but a zoom provides no full-box mean number density, so clustering statistics must be emulated rather than measured directly. Companion work joins the small-scale pair counts to a perturbation-theory prediction on large scales; see the <a href="/emulators/#clustering">Emulators</a> page.</p>
+<p>Pairs can be counted inside each region, but a zoom provides no full-box mean number density, so clustering statistics must be emulated rather than measured directly. Companion work joins the small-scale pair counts to a perturbation-theory prediction on large scales.</p>
 </details>
 
 <details>
@@ -57,5 +57,5 @@ body_class: faq
 
 <details>
 <summary>Where was it run?</summary>
-<p>On the DiRAC COSMA facility at Durham University. Each zoom fits on a single 28-core node with under 64 GB of memory, so the suite runs as a job array and fills spare capacity rather than needing a dedicated allocation.</p>
+<p>On the DiRAC COSMA facility at Durham University. Each zoom fits on a single 28-core node with under 64 GB of memory, so the suite runs as a job array without requiring a dedicated allocation.</p>
 </details>

@@ -1,7 +1,7 @@
 ---
 title: About
 permalink: /about/
-lede: Tessera replaces the monolithic simulation box with a designed mosaic of zoom resimulations, and replaces the measurement of global statistics with their emulation.
+lede: Tessera is a suite of zoom resimulations spanning cosmology and environment, from which global statistics are recovered by emulation rather than measured directly in a single box.
 math: true
 ---
 
@@ -22,11 +22,11 @@ No existing suite satisfies all four. Gigaparsec N-body boxes exist for one or a
 
 ## Composite zooms
 
-Zoom resimulation is the complementary lever. A region is selected from a large, low-resolution parent volume and re-run at much higher resolution, retaining the large-scale tidal field while gaining mass resolution at modest cost. When enough regions spanning a range of environments are combined with appropriate weights, the resulting composite distribution functions approximate those of the parent.
+Zoom resimulation offers a complementary approach. A region is selected from a large, low-resolution parent volume and re-run at much higher resolution, retaining the large-scale tidal field while gaining mass resolution at modest cost. When enough regions spanning a range of environments are combined with appropriate weights, the resulting composite distribution functions approximate those of the parent.
 
 In a [proof-of-concept study](https://arxiv.org/abs/2604.17981) we formalised this as an emulation problem. A normalising flow for the halo mass function was trained on small regions drawn from the Quijote Big Sobol Sequence, conditioned on the overdensity of each region and the cosmology of its parent. Integrating the flow over the overdensity distribution of the parent recovered the global mass function of the full (1 Gpc/h)³ box using 0.026 per cent of the simulated volume. That work was run entirely within existing periodic boxes, so the method was validated but the resolution gain that motivates it was never realised.
 
-Tessera is the realisation of that gain.
+Tessera applies the same framework to dedicated zoom simulations, so that the resolution gain is realised.
 
 ## The pipeline
 
@@ -66,14 +66,14 @@ and recover the global statistic by integrating over the overdensity distributio
 
 $$\Phi_{\rm global}(m \mid \theta) = \int \Phi(m \mid \theta, \delta)\, p(\delta \mid \theta)\, {\rm d}\delta .$$
 
-The particle-mesh parents serve twice: to select the regions, and to supply the weights p(δ &#124; θ) with which they are recombined, at a cost of minutes per cosmology. The [Emulators](/emulators/) page describes the models in more detail.
+The particle-mesh parents serve two purposes: to select the regions, and to supply the weights p(δ &#124; θ) with which they are recombined, at a cost of minutes per cosmology. The emulators are described in detail in the suite paper.
 
 ## Cost
 
-A parent costs about 15 core-hours including post-processing. A zoom costs around 10³ core-hours, so the 1,041 zooms completed so far represent roughly 10⁶ core-hours. A single periodic box of the same volume at the zoom resolution would need 8192³ particles per cosmology, around 9 million core-hours each; a suite of a thousand would cost 9 billion. The comparison is not like for like, since each zoom resolves only a (50 Mpc/h)³ region and the global statistics are recovered through the emulator, but it is why the suite exists.
+A parent costs about 15 core-hours including post-processing. A zoom costs around 10³ core-hours, so the 1,041 zooms completed so far represent roughly 10⁶ core-hours. A single periodic box of the same volume at the zoom resolution would need 8192³ particles per cosmology, around 9 million core-hours each; a suite of a thousand would cost 9 billion. The comparison is not like for like, since each zoom resolves only a (50 Mpc/h)³ region and the global statistics are recovered through the emulator, but it motivates the approach.
 
 {% include figure.html src="/assets/img/figures/cost_ncosmo.webp" alt="Cost of simulation suites with effective volume above 1 Gpc³ against the number of cosmologies each samples" caption="Approximate cost of simulation suites with an effective volume above 1 Gpc³ against the number of cosmologies each samples, coloured by the halo mass resolved with 100 particles. Dashed lines mark constant cost per cosmology in core-hours." %}
 
 ## Limitations
 
-We try to be explicit about what the approach does not yet do. The parents are particle-mesh, so their accuracy is tested rather than assumed. There is one region per parent, so environment and cosmology are not independently sampled within a box, and a single realisation per cosmology. The suite is dark-matter-only, so there is no baryonic back-reaction on the halo mass function. Clustering statistics need the emulated mean number density rather than a measured one, and are the subject of a companion paper. ΛCDM lies near the edge of the dynamical dark energy design, which we are addressing in the next block of the suite.
+The approach has several limitations at present. The parents are particle-mesh, so their accuracy is tested rather than assumed. There is one region per parent, so environment and cosmology are not independently sampled within a box, and a single realisation per cosmology. The suite is dark-matter-only, so there is no baryonic back-reaction on the halo mass function. Clustering statistics need the emulated mean number density rather than a measured one, and are the subject of a companion paper. ΛCDM lies near the edge of the dynamical dark energy design, which we are addressing in the next block of the suite.

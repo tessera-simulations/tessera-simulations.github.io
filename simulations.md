@@ -51,7 +51,7 @@ For each cosmology, CAMB with its PPF dark-energy model computes the z = 0 trans
 
 Each parent receives an independent white-noise realisation, so the suite samples cosmic variance jointly with cosmology. Rather than writing snapshots, the smoothed overdensity field is measured on the device as the run proceeds at 14 epochs spaced by 0.1 dex in scale factor, and its quantiles are stored. Once the region has been selected the particle data are deleted, and what survives of a parent is a few megabytes.
 
-{% include figure.html src="/assets/img/figures/pm_vs_swift_hmf.webp" alt="Friends-of-friends halo mass function of the fiducial parent run with pmwd and with SWIFT from identical initial conditions" caption="What the parents do not provide. The z = 0 FoF mass function of the fiducial parent evolved with pmwd (orange) and with the SWIFT tree-PM solver (black) from identical initial conditions. The PM parent recovers halo abundances only in the cluster regime, which is why parents are used solely for the large-scale density field." %}
+{% include figure.html src="/assets/img/figures/pm_vs_swift_hmf.webp" alt="Friends-of-friends halo mass function of the fiducial parent run with pmwd and with SWIFT from identical initial conditions" caption="The z = 0 FoF mass function of the fiducial parent evolved with pmwd (orange) and with the SWIFT tree-PM solver (black) from identical initial conditions. The PM parent recovers halo abundances only in the cluster regime, which is why parents are used solely for the large-scale density field." %}
 
 ## Regions
 
