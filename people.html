@@ -14,7 +14,6 @@ permalink: /people/
     {% for p in site.data.people.core %}
     <div class="person">
       <strong>{% if p.url %}<a href="{{ p.url }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</strong>
-      <span class="role">{{ p.role }}</span>
       <span class="aff">{{ p.affiliation }}</span>
     </div>
     {% endfor %}

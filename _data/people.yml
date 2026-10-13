@@ -1,44 +1,30 @@
 core:
   - name: Chris Lovell
-    role: Project lead
     affiliation: Kavli Institute for Cosmology and Institute of Astronomy, University of Cambridge
     url: https://christopherlovell.co.uk
   - name: Will Roper
-    role: SWIFT zoom solver
     affiliation: Astronomy Centre, University of Sussex
   - name: Max Lee
-    role: Emulation and inference
     affiliation: Department of Astronomy, Columbia University
   - name: Daniel Anglés-Alcázar
-    role: Galaxy formation
     affiliation: Department of Physics, University of Connecticut
   - name: Shy Genel
-    role: Simulation design
     affiliation: Columbia University and the Flatiron Institute
   - name: Francisco Villaescusa-Navarro
-    role: Quijote and emulation
     affiliation: Flatiron Institute
   - name: Claudia Lagos
-    role: SHARK semi-analytic model
     affiliation: ICRAR, University of Western Australia
   - name: Ángel Chandro-Gómez
-    role: SHARK and merger trees
     affiliation: ICRAR, University of Western Australia
   - name: Thomas Bebbington
-    role: Computing
     affiliation: University of Bristol
   - name: Carol Cuesta-Lazaro
-    role: Clustering
     affiliation: MIT and the Flatiron Institute
   - name: Shivam Pandey
-    role: Inference
     affiliation: Columbia University
   - name: Yao Zhang
-    role: Clustering
     affiliation: Flatiron Institute
   - name: Ben Wandelt
-    role: Inference
     affiliation: Institut d'Astrophysique de Paris and the Flatiron Institute
   - name: Will Handley
-    role: Inference
     affiliation: Kavli Institute for Cosmology, University of Cambridge
