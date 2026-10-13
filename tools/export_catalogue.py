@@ -33,8 +33,8 @@ import h5py
 import numpy as np
 
 COSMO = ["Omega_m", "Omega_b", "h", "n_s", "sigma_8", "w_0", "w_a"]
-STATUS_ORDER = ["not selected", "selected", "ics", "started", "swift done",
-                "structure", "trees", "masks", "galaxies", "archived"]
+STATUS_ORDER = ["not selected", "selected", "ics", "started", "completed",
+                "structure", "trees", "masks", "galaxies"]
 
 
 # ---------------------------------------------------------------- helpers
@@ -196,8 +196,6 @@ def scan_run(d: Path, fragments):
 
 
 def status_of(selected, r):
-    if r["archived"]:
-        return "archived"
     if r["shark_layers"] > 0:
         return "galaxies"
     if r["masks"]:
@@ -207,7 +205,7 @@ def status_of(selected, r):
     if r["hbt"]:
         return "structure"
     if r["swift_done"]:
-        return "swift done"
+        return "completed"
     if r["started"]:
         return "started"
     if r["ics"]:
@@ -282,7 +280,6 @@ def main():
         ("hbt", "bool", "HBT-HERONS", "", "stage"),
         ("trees", "bool", "DHalo trees", "", "stage"),
         ("masks", "bool", "Region masks", "", "stage"),
-        ("archived", "bool", "Archived", "", "stage"),
         ("n_layers", "int", "Galaxy layers available", "", "galaxies"),
         ("shark_layers", "int", "SHARK layers complete", "", "galaxies"),
         ("seds_layers", "int", "Synthesizer SED layers complete", "", "galaxies"),
@@ -314,7 +311,7 @@ def main():
             scan["n_highres"], scan["n_lowres"],
             sig(ms["highres_particle_mass_1e10msun_h"] * 1e10, 4) if ms else None,
             scan["n_fof_z0"], sig(scan["walltime_h"], 4), scan["n_snaps"],
-            scan["ics"], scan["swift_done"], scan["hbt"], scan["trees"], scan["masks"], scan["archived"],
+            scan["ics"], scan["swift_done"], scan["hbt"], scan["trees"], scan["masks"],
             scan["n_layers"], scan["shark_layers"], scan["seds_layers"], scan["machine"],
         ] + [sig(v, 5) for v in gal_phys]
         rows.append(row)

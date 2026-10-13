@@ -50,7 +50,7 @@ products:
     status: planned
     format: Python package
     description: >-
-      The conditional normalising flows for the halo mass function, concentration–mass relation and
+      The neural network emulators for the halo mass function, concentration–mass relation and
       galaxy statistics, with the integration code that produces global predictions.
   - name: Reduced snapshots
     status: on request

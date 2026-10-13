@@ -10,8 +10,8 @@
 
   const STATUS_COLOURS = {
     'not selected': '#d6dce7', 'selected': '#b4c0d6', 'ics': '#c9b7e8', 'started': '#f2b84b',
-    'swift done': '#a9dcf7', 'structure': '#6fc0ee', 'trees': '#3fa9e6', 'masks': '#2d7fd6',
-    'galaxies': '#1e49c9', 'archived': '#0a2a7a',
+    'completed': '#a9dcf7', 'structure': '#6fc0ee', 'trees': '#3fa9e6', 'masks': '#2d7fd6',
+    'galaxies': '#0a2a7a',
   };
   const DEFAULT_COLS = ['parent_idx', 'label', 'status', 'Omega_m', 'Omega_b', 'h', 'n_s', 'sigma_8',
     'w_0', 'w_a', 'target_percentile', 'log10_1p_delta', 'n_highres', 'walltime_h', 'shark_layers', 'seds_layers'];
@@ -335,11 +335,11 @@
     const summary = h('div', { class: 'cat-summary' },
       [['Design points', meta.n_rows], ['Regions selected', meta.n_selected],
        ['Zooms with trees and masks', rows.filter(r => r[colIndex.masks]).length],
-       ['Archived with all galaxy layers', meta.status_counts.archived || 0]]
+       ['All galaxy layers complete', rows.filter(r => r[colIndex.n_layers] > 0 && r[colIndex.seds_layers] === r[colIndex.n_layers]).length]]
         .map(([k, v]) => h('div', { class: 'cat-stat' }, h('div', { class: 'num' }, fmtInt(v)), h('div', { class: 'lab' }, k))));
 
     const qInput = h('input', { type: 'text', name: 'q', value: state.q, spellcheck: 'false', autocomplete: 'off',
-      placeholder: 'e.g. Omega_m > 0.3 and status == "archived"' });
+      placeholder: 'e.g. Omega_m > 0.3 and status == "galaxies"' });
     const presets = h('select', { 'aria-label': 'Preset filters', onchange: e => { qInput.value = e.target.value; state.q = e.target.value; state.page = 0; applyFilter(); render(); e.target.selectedIndex = 0; } },
       h('option', { value: '' }, 'Presets…'), PRESETS.map(([k, v]) => h('option', { value: v }, k)));
     const form = h('form', { class: 'cat-query', onsubmit: e => { e.preventDefault(); state.q = qInput.value; state.page = 0; applyFilter(); render(); } },
