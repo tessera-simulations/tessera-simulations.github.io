@@ -61,6 +61,6 @@ wide: true
 
 <h2>Citing Tessera</h2>
 
-<p>Please cite the suite paper, and the proof-of-concept paper if you use the emulation framework. Both are listed on the <a href="/publications/">Publications</a> page, and we will add BibTeX entries there when the suite paper is on arXiv. If you build on the SHARK galaxies or Synthesizer photometry, please also cite those codes.</p>
+<p>Please cite the suite paper, and the halo mass function emulator paper if you use the emulation framework. Both are listed on the <a href="/publications/">Publications</a> page, and we will add BibTeX entries there when the suite paper is on arXiv. If you build on the SHARK galaxies or Synthesizer photometry, please also cite those codes.</p>
 
 </div>

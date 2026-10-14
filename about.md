@@ -24,7 +24,7 @@ No existing suite satisfies all four. Gigaparsec N-body boxes exist for one or a
 
 Zoom resimulation offers a complementary approach. A region is selected from a large, low-resolution parent volume and re-run at much higher resolution, retaining the large-scale tidal field while gaining mass resolution at modest cost. When enough regions spanning a range of environments are combined with appropriate weights, the resulting composite distribution functions approximate those of the parent.
 
-In a [proof-of-concept study](https://arxiv.org/abs/2604.17981) we formalised this as an emulation problem. A neural network emulator for the halo mass function was trained on small regions drawn from the Quijote Big Sobol Sequence, conditioned on the overdensity of each region and the cosmology of its parent. Integrating the emulator over the overdensity distribution of the parent recovered the global mass function of the full (1 Gpc/h)³ box using 0.026 per cent of the simulated volume. That work was run entirely within existing periodic boxes, so the method was validated but the resolution gain that motivates it was never realised.
+In the [halo mass function emulator paper](https://arxiv.org/abs/2604.17981) we formalised this as an emulation problem. A neural network emulator for the halo mass function was trained on small regions drawn from the Quijote Big Sobol Sequence, conditioned on the overdensity of each region and the cosmology of its parent. Integrating the emulator over the overdensity distribution of the parent recovered the global mass function of the full (1 Gpc/h)³ box using 0.026 per cent of the simulated volume. That work was run entirely within existing periodic boxes, so the method was validated but the resolution gain that motivates it was never realised.
 
 Tessera applies the same framework to dedicated zoom simulations, so that the resolution gain is realised.
 
@@ -42,7 +42,7 @@ Each parent is a (1.6 Gpc/h)³ periodic volume of 1024³ particles, evolved to z
 
 ### 2. Region selection by rank
 
-The overdensity field of each parent is measured in spherical apertures of radius 31 Mpc/h centred on a 128³ lattice. The sphere of this radius has the same volume as a (50 Mpc/h)³ cube. Following the proof of concept, we select on the *percentile* of the overdensity within each parent rather than on its value, which bounds the design coordinate to [0, 100] for every cosmology and cancels any monotonic bias in the particle-mesh density field.
+The overdensity field of each parent is measured in spherical apertures of radius 31 Mpc/h centred on a 128³ lattice. The sphere of this radius has the same volume as a (50 Mpc/h)³ cube. Following the halo mass function emulator paper, we select on the *percentile* of the overdensity within each parent rather than on its value, which bounds the design coordinate to [0, 100] for every cosmology and cancels any monotonic bias in the particle-mesh density field.
 
 Each parent contributes one region, at the percentile given by its own Sobol' coordinate, so that the suite as a whole samples cosmology and environment jointly rather than on a product grid. The particles within the selected sphere, padded by 2 Mpc, are traced back to the initial conditions; if a massive halo straddles the boundary it is absorbed in full rather than rejected, which would bias against dense environments.
 

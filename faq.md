@@ -52,7 +52,7 @@ body_class: faq
 
 <details>
 <summary>How do I cite Tessera?</summary>
-<p>Cite the suite paper for any use of the data, and the proof-of-concept paper if you use the emulation framework. Both are on the <a href="/publications/">Publications</a> page.</p>
+<p>Cite the suite paper for any use of the data, and the halo mass function emulator paper if you use the emulation framework. Both are on the <a href="/publications/">Publications</a> page.</p>
 </details>
 
 <details>
