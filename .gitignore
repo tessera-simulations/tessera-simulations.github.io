@@ -5,3 +5,4 @@ Gemfile.lock
 .sass-cache/
 .shots/
 Gemfile.dev.lock
+__pycache__/

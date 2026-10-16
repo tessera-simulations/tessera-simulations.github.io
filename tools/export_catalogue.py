@@ -33,6 +33,7 @@ import h5py
 import numpy as np
 
 COSMO = ["Omega_m", "Omega_b", "h", "n_s", "sigma_8", "w_0", "w_a"]
+SWIFT_CORES = 28
 STATUS_ORDER = ["not selected", "selected", "ics", "started", "completed",
                 "structure", "trees", "masks", "galaxies"]
 
@@ -274,6 +275,7 @@ def main():
         ("m_highres", "float", "High-resolution particle mass", "M☉/h", "zoom"),
         ("n_fof_z0", "int", "FoF groups at z = 0", "", "zoom"),
         ("walltime_h", "float", "SWIFT wall time", "h", "zoom"),
+        ("cpu_hours", "float", "SWIFT CPU time", "core h", "zoom"),
         ("n_snaps", "int", "Snapshots on disk", "", "zoom"),
         ("ics", "bool", "Initial conditions", "", "stage"),
         ("swift_done", "bool", "SWIFT finished", "", "stage"),
@@ -310,7 +312,9 @@ def main():
             sig(max(b["extent_abs_mpc"]), 5) if b else None,
             scan["n_highres"], scan["n_lowres"],
             sig(ms["highres_particle_mass_1e10msun_h"] * 1e10, 4) if ms else None,
-            scan["n_fof_z0"], sig(scan["walltime_h"], 4), scan["n_snaps"],
+            scan["n_fof_z0"], sig(scan["walltime_h"], 4),
+            sig(scan["walltime_h"] * SWIFT_CORES, 4) if scan["walltime_h"] is not None else None,
+            scan["n_snaps"],
             scan["ics"], scan["swift_done"], scan["hbt"], scan["trees"], scan["masks"],
             scan["n_layers"], scan["shark_layers"], scan["seds_layers"], scan["machine"],
         ] + [sig(v, 5) for v in gal_phys]

@@ -14,7 +14,7 @@
     'galaxies': '#0a2a7a',
   };
   const DEFAULT_COLS = ['parent_idx', 'label', 'status', 'Omega_m', 'Omega_b', 'h', 'n_s', 'sigma_8',
-    'w_0', 'w_a', 'target_percentile', 'log10_1p_delta', 'n_highres', 'walltime_h', 'shark_layers', 'seds_layers'];
+    'w_0', 'w_a', 'target_percentile', 'log10_1p_delta', 'n_highres', 'walltime_h', 'cpu_hours', 'shark_layers', 'seds_layers'];
   const PRESETS = [
     ['All design points', ''],
     ['Selected regions', 'status != "not selected"'],
