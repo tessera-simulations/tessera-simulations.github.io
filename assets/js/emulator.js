@@ -125,7 +125,7 @@
   const COL = { cur: hexRgb('#1e49c9'), fid: '#5d6b83', fidBand: 'rgba(93,107,131,0.12)',
     grid: '#e3e8f0', frame: '#d6dce7', text: '#5d6b83', ink: '#0f1e38' };
 
-  function draw(canvas, em, cur, fid, view, rgb, kept) {
+  function draw(canvas, em, cur, fid, view, rgb, kept, showFid) {
     const colour = rgba(rgb, 1), band = rgba(rgb, 0.16);
     const W = canvas.clientWidth || 700, H = Math.round(Math.min(W * 0.75, 540)), dpr = window.devicePixelRatio || 1;
     canvas.width = W * dpr; canvas.height = H * dpr; canvas.style.height = H + 'px';
@@ -163,13 +163,13 @@
     };
     clip(top);
     for (const [c, fill] of [[fid, COL.fidBand], [cur, band]]) {
-      if (!c.lo) continue;
+      if (!c.lo || (c === fid && !showFid)) continue;
       ctx.fillStyle = fill; ctx.beginPath();
       c.x.forEach((x, i) => (i ? ctx.lineTo(X(x), Ym(c.hi[i])) : ctx.moveTo(X(x), Ym(c.hi[i]))));
       for (let i = c.x.length - 1; i >= 0; i--) ctx.lineTo(X(c.x[i]), Ym(c.lo[i]));
       ctx.fill();
     }
-    line(fid.x, fid.y, Ym, COL.fid, 1.5, [5, 4]);
+    if (showFid) line(fid.x, fid.y, Ym, COL.fid, 1.5, [5, 4]);
     for (const k of kept) line(k.cur.x, k.cur.y, Ym, rgba(k.rgb, 1), 1.6);
     line(cur.x, cur.y, Ym, colour, 2.2);
     ctx.restore();
@@ -182,19 +182,13 @@
     ctx.fillText(em.kind === 'relation' ? 'median / fiducial' : 'ratio to fiducial', m.l + 6, bot[0] + 4);
   }
 
-  // fixed axes, so the curve moves rather than the frame: the coordinate over every redshift, the y range of the
-  // fiducial at every snapshot redshift
-  function axes(em, fidValues) {
-    const c = em.coord, L = c.limits;
-    const zi = L ? em.inputs.findIndex(p => p.name === L.input) : -1;
+  // the y range of what is drawn (the current curve and band, the fiducial, the kept curves), padded and snapped to
+  // round steps so the frame only moves when a curve leaves it
+  function yRange(em, curves) {
     let lo = Infinity, hi = -Infinity;
-    for (const z of L ? L.at : [null]) {
-      const v = fidValues.slice(); if (zi >= 0) v[zi] = z;
-      const k = curve(em, v, 40);
-      for (const arr of [k.y, k.lo, k.hi]) if (arr) for (const y of arr) { lo = Math.min(lo, y); hi = Math.max(hi, y); }
-    }
-    const pad = em.kind === 'distribution' ? [1.0, 0.5] : [0.1, 0.1];
-    return { x: [c.lo - 0.15, c.hi + 0.15], y: [lo - pad[0], hi + pad[1]] };
+    for (const c of curves) for (const arr of [c.y, c.lo, c.hi]) if (arr) for (const y of arr) { lo = Math.min(lo, y); hi = Math.max(hi, y); }
+    const step = em.kind === 'distribution' ? 0.5 : 0.1, pad = step / 2;
+    return [Math.floor((lo - pad) / step) * step, Math.ceil((hi + pad) / step) * step];
   }
 
   // ---------- widget ----------
@@ -203,10 +197,11 @@
     const fidValues = em.inputs.map(p => p.fiducial);
     const values = em.inputs.map((p, i) => (p.name in kept ? kept[p.name] : fidValues[i]));
     const zi = em.coord.limits ? em.inputs.findIndex(p => p.name === em.coord.limits.input) : -1;
-    const view = axes(em, fidValues);
+    const xview = [em.coord.lo - 0.15, em.coord.hi + 0.15];
     const canvas = h('canvas', { class: 'emu-canvas', role: 'img', 'aria-label': `${em.name} emulator plot` });
     const shown = [], held = [];        // held: curves kept on the plot, {values, cur, ratio, rgb}
     let fidCurve = null, fidKey = null, pending = false, active = -1;     // active: the slider last moved
+    let yfixed = null, lastY = null;   // the y range frozen by the checkbox, else null to follow the curves
 
     const frac = i => (values[i] - em.inputs[i].lo) / (em.inputs[i].hi - em.inputs[i].lo);
     const colour = () => (active < 0 ? COL.cur : paramColour(em.inputs[active].name, frac(active)));
@@ -217,7 +212,11 @@
       pending = false;
       const fv = fiducialAt(values);
       if (fv.join() !== fidKey) { fidCurve = curve(em, fv); fidKey = fv.join(); }
-      draw(canvas, em, curve(em, values), fidCurve, view, colour(), held);
+      const cur = curve(em, values);
+      const y = yfixed || yRange(em, [cur, ...(showFid.checked ? [fidCurve] : []), ...held.map(k => k.cur)]);
+      draw(canvas, em, cur, fidCurve, { x: xview, y }, colour(), held, showFid.checked);
+      fidEntry.hidden = !showFid.checked;
+      lastY = y;
       values.forEach((v, i) => {
         shown[i].textContent = fmtVal(v); shown[i].classList.toggle('is-changed', changed(i, v));
         kept[em.inputs[i].name] = v;
@@ -241,13 +240,14 @@
     // legend: the fiducial, the live curve, then each held curve with the parameters that differ from the fiducial
     const swatch = h('span', { class: 'emu-swatch' });
     const legend = h('ul', { class: 'emu-legend' });
+    const fidEntry = h('li', null, h('span', { class: 'emu-swatch is-dashed' }), 'fiducial');
     const describe = v => {
       const parts = v.map((x, i) => (changed(i, x) ? `${em.inputs[i].label} = ${fmtVal(x)}` : null)).filter(Boolean);
       return parts.length ? parts.join(', ') : 'fiducial';
     };
     function renderLegend() {
       legend.replaceChildren(
-        h('li', null, h('span', { class: 'emu-swatch is-dashed' }), 'fiducial'),
+        fidEntry,
         h('li', null, swatch, 'current'),
         ...held.map((k, j) => h('li', null,
           h('span', { class: 'emu-swatch', style: `background:${rgba(k.rgb, 1)}` }), h('span', { html: describe(k.values) }),
@@ -268,6 +268,10 @@
     } }, 'Reset to fiducial');
     const keepBtn = h('button', { class: 'cat-btn', type: 'button', onclick: keep }, 'Keep curve');
     const clear = h('button', { class: 'cat-btn', type: 'button', onclick: () => { held.length = 0; renderLegend(); schedule(); } }, 'Clear kept curves');
+    const fixY = h('input', { type: 'checkbox', id: `emu-${em.name}-fixy` });
+    fixY.addEventListener('change', () => { yfixed = fixY.checked ? lastY : null; schedule(); });
+    const showFid = h('input', { type: 'checkbox', id: `emu-${em.name}-fid`, checked: true });
+    showFid.addEventListener('change', schedule);
 
     const V = em.validation, A = V.all;
     const at = V.by_z ? ` at ${V.by_z.length} snapshot redshifts (interpolated between them)` : '';
@@ -276,7 +280,9 @@
       'ticks mark the fiducial values. Double-click the plot or press "Keep curve" to leave the current curve on the plot.';
 
     body.replaceChildren(
-      h('div', { class: 'emu-controls' }, sliders, h('div', { class: 'emu-buttons' }, reset, keepBtn, clear)),
+      h('div', { class: 'emu-controls' }, sliders, h('div', { class: 'emu-buttons' }, reset, keepBtn, clear),
+        h('label', { class: 'emu-check', for: showFid.id }, showFid, 'Show fiducial curve'),
+        h('label', { class: 'emu-check', for: fixY.id }, fixY, 'Fix y-axis limits')),
       h('div', { class: 'emu-plot' },
         h('div', { class: 'emu-ylabel', html: withUnit(em.y_label, em.y_unit) }), canvas,
         h('div', { class: 'emu-xlabel', html: withUnit(em.coord.label, em.coord.unit) }), legend));
