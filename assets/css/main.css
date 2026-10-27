@@ -268,3 +268,21 @@ p { margin: 0 0 1em; }
 .cat-detail dt { color: var(--muted); }
 .cat-detail dd { margin: 0; font-variant-numeric: tabular-nums; text-align: right; }
 .cat-help { max-width: 46em; padding-top: 12px; }
+
+/* ---------- emulators ---------- */
+.emulator { margin: 1.4em 0 2.4em; background: var(--paper); border: 1px solid var(--line); border-radius: var(--tile-r); padding: 16px 18px 6px; }
+.emu-body { display: grid; grid-template-columns: minmax(220px, 280px) 1fr; gap: 22px; align-items: start; }
+@media (max-width: 760px) { .emu-body { grid-template-columns: 1fr; } }
+.emu-controls { display: flex; flex-direction: column; gap: 8px; font-size: 0.92rem; }
+.emu-slider { display: grid; grid-template-columns: 2.6em 1fr 3.4em; gap: 8px; align-items: center; }
+.emu-slider label { font-family: var(--display); font-weight: 600; }
+.emu-slider input[type=range] { width: 100%; accent-color: var(--cobalt); }
+.emu-slider output { font-variant-numeric: tabular-nums; text-align: right; color: var(--muted); }
+.emu-controls .cat-btn { align-self: flex-start; margin-top: 6px; }
+.emu-plot { min-width: 0; }
+.emu-canvas { width: 100%; display: block; }
+.emu-ylabel, .emu-xlabel { font-family: var(--display); font-weight: 600; font-size: 0.86rem; color: var(--ink); }
+.emu-ylabel { padding-left: 62px; margin-bottom: 4px; }
+.emu-xlabel { text-align: center; padding-left: 62px; }
+.emu-note { font-size: 0.86rem; color: var(--muted); margin: 12px 0 8px; line-height: 1.5; }
+.emu-error { color: #a4231c; }
