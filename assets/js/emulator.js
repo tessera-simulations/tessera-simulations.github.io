@@ -1,7 +1,8 @@
-/* Tessera emulators in the browser. Each <div class="emulator" data-src="..."> loads one distilled network
+/* Tessera emulators in the browser. The <div class="emulator" data-base="..."> offers one relation per sibling
+   <div class="emu-desc" data-model="key" data-label="..."> in a drop-down; each loads the distilled network <base>/<key>.json
    (analysis/emulator/distil_site.py in the tessera repo): a small MLP from the parameters (and z) and log10 M to a
    distribution function or the quantiles of a relation. Its inputs are sliders; the curve is redrawn against the
-   fiducial cosmology at every change. */
+   fiducial cosmology at every change, in the colour of the parameter last moved. */
 (function () {
   'use strict';
 
@@ -98,11 +99,34 @@
     return out;
   }
 
+  // ---------- colour ----------
+  // the parameter sweeps of the paper (analysis/emulator/evaluate_hmf.py SWEEP_CMAPS): one matplotlib colormap per
+  // parameter, its palest third dropped, from the low to the high end of the design box; viridis otherwise
+  const CMAPS = {
+    Omega_m: ['#b7d4ea', '#84bcdb', '#519ccc', '#2979b9', '#0a549e', '#08306b'],   // Blues
+    Omega_b: ['#b8e3b2', '#8ace88', '#53b466', '#2a924a', '#03702e', '#00441b'],   // Greens
+    h: ['#fdc38d', '#fd9d53', '#f57622', '#de5005', '#ab3803', '#7f2704'],         // Oranges
+    n_s: ['#cecfe5', '#adabd2', '#8b87bf', '#6f5ba8', '#562b91', '#3f007d'],       // Purples
+    sigma_8: ['#fcab8f', '#fb7d5d', '#f34c37', '#d32020', '#a91016', '#67000d'],   // Reds
+    w_0: ['#5e3b26', '#8a5738', '#b7744a', '#e3905c', '#ffac6d', '#ffc77f'],       // copper
+    w_a: ['#fbb6bc', '#f883ab', '#e6479b', '#b90d84', '#7f0178', '#49006a'],       // RdPu
+  };
+  const VIRIDIS = ['#440154', '#414487', '#2a788e', '#22a884', '#7ad151', '#fde725'];
+  const hexRgb = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
+  const rgba = (rgb, a) => `rgba(${rgb.join(',')},${a})`;
+  // the parameter's colour at fraction t (0-1) of its range, between the stops
+  function paramColour(name, t) {
+    const stops = (CMAPS[name] || VIRIDIS).map(hexRgb), u = Math.min(Math.max(t, 0), 1) * (stops.length - 1);
+    const i = Math.min(Math.floor(u), stops.length - 2), f = u - i;
+    return stops[i].map((a, k) => Math.round(a + (stops[i + 1][k] - a) * f));
+  }
+
   // ---------- plot ----------
-  const COL = { cur: '#1e49c9', band: 'rgba(30,73,201,0.16)', fid: '#5d6b83', fidBand: 'rgba(93,107,131,0.12)',
+  const COL = { cur: hexRgb('#1e49c9'), fid: '#5d6b83', fidBand: 'rgba(93,107,131,0.12)',
     grid: '#e3e8f0', frame: '#d6dce7', text: '#5d6b83', ink: '#0f1e38' };
 
-  function draw(canvas, em, cur, fid, view) {
+  function draw(canvas, em, cur, fid, view, rgb, kept) {
+    const colour = rgba(rgb, 1), band = rgba(rgb, 0.16);
     const W = canvas.clientWidth || 700, H = Math.round(Math.min(W * 0.75, 540)), dpr = window.devicePixelRatio || 1;
     canvas.width = W * dpr; canvas.height = H * dpr; canvas.style.height = H + 'px';
     const ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr); ctx.clearRect(0, 0, W, H);
@@ -114,7 +138,8 @@
 
     // the current curve over the fiducial at the same z, on the current curve's points
     const ratio = cur.x.map((x, i) => 10 ** (cur.y[i] - interp(x, fid.x, fid.y)));
-    const rmin = Math.min(...ratio), rmax = Math.max(...ratio);
+    const all = ratio.concat(...kept.map(k => k.ratio));
+    const rmin = Math.min(...all), rmax = Math.max(...all);
     const half = Math.max(0.05, (rmax - rmin) / 2 * 1.15), mid = (rmax + rmin) / 2;
     const rlo = Math.min(mid - half, 0.97), rhi = Math.max(mid + half, 1.03);
     const Ym = panelY(top, view.y[0], view.y[1]), Yr = panelY(bot, rlo, rhi);
@@ -137,7 +162,7 @@
       xs.forEach((x, i) => (i ? ctx.lineTo(X(x), Y(ys[i])) : ctx.moveTo(X(x), Y(ys[i])))); ctx.stroke(); ctx.setLineDash([]);
     };
     clip(top);
-    for (const [c, fill] of [[fid, COL.fidBand], [cur, COL.band]]) {
+    for (const [c, fill] of [[fid, COL.fidBand], [cur, band]]) {
       if (!c.lo) continue;
       ctx.fillStyle = fill; ctx.beginPath();
       c.x.forEach((x, i) => (i ? ctx.lineTo(X(x), Ym(c.hi[i])) : ctx.moveTo(X(x), Ym(c.hi[i]))));
@@ -145,11 +170,13 @@
       ctx.fill();
     }
     line(fid.x, fid.y, Ym, COL.fid, 1.5, [5, 4]);
-    line(cur.x, cur.y, Ym, COL.cur, 2.2);
+    for (const k of kept) line(k.cur.x, k.cur.y, Ym, rgba(k.rgb, 1), 1.6);
+    line(cur.x, cur.y, Ym, colour, 2.2);
     ctx.restore();
     clip(bot);
     line([xlo, xhi], [1, 1], Yr, COL.fid, 1, [5, 4]);
-    line(cur.x, ratio, Yr, COL.cur, 2);
+    for (const k of kept) line(k.cur.x, k.ratio, Yr, rgba(k.rgb, 1), 1.4);
+    line(cur.x, ratio, Yr, colour, 2);
     ctx.restore();
     ctx.fillStyle = COL.text; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
     ctx.fillText(em.kind === 'relation' ? 'median / fiducial' : 'ratio to fiducial', m.l + 6, bot[0] + 4);
@@ -171,55 +198,114 @@
   }
 
   // ---------- widget ----------
-  async function init(root) {
-    let em;
-    try { em = prepare(await (await fetch(root.dataset.src)).json()); }
-    catch (e) { root.replaceChildren(h('p', { class: 'emu-error' }, 'Could not load the emulator.')); return; }
-
-    const fidValues = em.inputs.map(p => p.fiducial), values = fidValues.slice();
+  // one relation's sliders, plot and note into body/note; `kept` carries slider values by name between relations
+  function mount(em, body, note, kept) {
+    const fidValues = em.inputs.map(p => p.fiducial);
+    const values = em.inputs.map((p, i) => (p.name in kept ? kept[p.name] : fidValues[i]));
     const zi = em.coord.limits ? em.inputs.findIndex(p => p.name === em.coord.limits.input) : -1;
     const view = axes(em, fidValues);
     const canvas = h('canvas', { class: 'emu-canvas', role: 'img', 'aria-label': `${em.name} emulator plot` });
-    const shown = [];
-    let fidCurve = null, fidKey = null, pending = false;
+    const shown = [], held = [];        // held: curves kept on the plot, {values, cur, ratio, rgb}
+    let fidCurve = null, fidKey = null, pending = false, active = -1;     // active: the slider last moved
+
+    const frac = i => (values[i] - em.inputs[i].lo) / (em.inputs[i].hi - em.inputs[i].lo);
+    const colour = () => (active < 0 ? COL.cur : paramColour(em.inputs[active].name, frac(active)));
+    const changed = (i, v) => Math.abs(v - fidValues[i]) > (em.inputs[i].hi - em.inputs[i].lo) / 800;   // beyond a slider step
+    const fiducialAt = v => { const fv = fidValues.slice(); if (zi >= 0) fv[zi] = v[zi]; return fv; };   // same z
 
     function render() {
       pending = false;
-      const fv = fidValues.slice(); if (zi >= 0) fv[zi] = values[zi];      // the fiducial cosmology at the same z
+      const fv = fiducialAt(values);
       if (fv.join() !== fidKey) { fidCurve = curve(em, fv); fidKey = fv.join(); }
-      draw(canvas, em, curve(em, values), fidCurve, view);
-      values.forEach((v, i) => { shown[i].textContent = fmtVal(v); });
+      draw(canvas, em, curve(em, values), fidCurve, view, colour(), held);
+      values.forEach((v, i) => {
+        shown[i].textContent = fmtVal(v); shown[i].classList.toggle('is-changed', changed(i, v));
+        kept[em.inputs[i].name] = v;
+      });
+      sliders.forEach((s, i) => { s.querySelector('label').style.color = i === active ? rgba(colour(), 1) : ''; });
+      swatch.style.background = rgba(colour(), 1);
     }
     const schedule = () => { if (!pending) { pending = true; requestAnimationFrame(render); } };
 
     const sliders = em.inputs.map((p, i) => {
       const input = h('input', { type: 'range', min: p.lo, max: p.hi, step: (p.hi - p.lo) / 400, value: values[i], id: `emu-${em.name}-${p.name}` });
-      input.addEventListener('input', () => { values[i] = parseFloat(input.value); schedule(); });
+      input.style.setProperty('--accent', rgba(paramColour(p.name, 0.6), 1));
+      input.addEventListener('input', () => { values[i] = parseFloat(input.value); active = i; schedule(); });
       shown[i] = h('output', { for: input.id });
-      return h('div', { class: 'emu-slider' }, h('label', { for: input.id, html: p.label }), input, shown[i]);
+      const f = Math.min(Math.max((p.fiducial - p.lo) / (p.hi - p.lo), 0), 1);
+      const tick = h('span', { class: 'emu-fid', title: `fiducial ${fmtVal(p.fiducial)}` });
+      tick.style.setProperty('--f', f);
+      return h('div', { class: 'emu-slider' }, h('label', { for: input.id, html: p.label }), h('div', { class: 'emu-track' }, tick, input), shown[i]);
     });
+
+    // legend: the fiducial, the live curve, then each held curve with the parameters that differ from the fiducial
+    const swatch = h('span', { class: 'emu-swatch' });
+    const legend = h('ul', { class: 'emu-legend' });
+    const describe = v => {
+      const parts = v.map((x, i) => (changed(i, x) ? `${em.inputs[i].label} = ${fmtVal(x)}` : null)).filter(Boolean);
+      return parts.length ? parts.join(', ') : 'fiducial';
+    };
+    function renderLegend() {
+      legend.replaceChildren(
+        h('li', null, h('span', { class: 'emu-swatch is-dashed' }), 'fiducial'),
+        h('li', null, swatch, 'current'),
+        ...held.map((k, j) => h('li', null,
+          h('span', { class: 'emu-swatch', style: `background:${rgba(k.rgb, 1)}` }), h('span', { html: describe(k.values) }),
+          h('button', { type: 'button', class: 'emu-remove', 'aria-label': 'Remove curve', title: 'Remove curve',
+            onclick: () => { held.splice(j, 1); renderLegend(); schedule(); } }, '×'))));
+      clear.disabled = held.length === 0;
+      swatch.style.background = rgba(colour(), 1);
+    }
+    function keep() {
+      const cur = curve(em, values), fid = curve(em, fiducialAt(values));
+      held.push({ values: values.slice(), cur, ratio: cur.x.map((x, i) => 10 ** (cur.y[i] - interp(x, fid.x, fid.y))), rgb: colour() });
+      renderLegend(); schedule();
+    }
+    canvas.addEventListener('dblclick', keep);
+
     const reset = h('button', { class: 'cat-btn', type: 'button', onclick: () => {
-      fidValues.forEach((v, i) => { values[i] = v; sliders[i].querySelector('input').value = v; }); schedule();
+      fidValues.forEach((v, i) => { values[i] = v; sliders[i].querySelector('input').value = v; }); active = -1; schedule();
     } }, 'Reset to fiducial');
+    const keepBtn = h('button', { class: 'cat-btn', type: 'button', onclick: keep }, 'Keep curve');
+    const clear = h('button', { class: 'cat-btn', type: 'button', onclick: () => { held.length = 0; renderLegend(); schedule(); } }, 'Clear kept curves');
 
     const V = em.validation, A = V.all;
-    const what = em.kind === 'relation' ? 'its 16th, 50th and 84th percentiles agree' : 'the mass function agrees';
-    const at = V.by_z ? ` at the ${V.by_z.length} snapshot redshifts it was trained on; between them the network interpolates in z` : '';
-    const note = h('p', { class: 'emu-note' },
-      `Distilled from the full Tessera emulator: at ${V.n_held_out} held-out parameter points ${what} with it to ` +
-      `${A.rms.toFixed(4)} dex rms (99% within ${A.p99.toFixed(4)} dex, at worst ${A.max.toFixed(4)} dex)${at}. ` +
-      'The sliders span the design box; the dashed curve is the fiducial (Planck 2018) cosmology.');
+    const at = V.by_z ? ` at ${V.by_z.length} snapshot redshifts (interpolated between them)` : '';
+    note.textContent = `Distilled network: ${A.rms.toFixed(4)} dex rms against the full emulator on ${V.n_held_out} held-out ` +
+      `parameter points${at}; 99% within ${A.p99.toFixed(4)} dex, maximum ${A.max.toFixed(4)} dex. Sliders span the design box; ` +
+      'ticks mark the fiducial values. Double-click the plot or press "Keep curve" to leave the current curve on the plot.';
 
-    root.replaceChildren(
-      h('div', { class: 'emu-body' },
-        h('div', { class: 'emu-controls' }, sliders, reset),
-        h('div', { class: 'emu-plot' },
-          h('div', { class: 'emu-ylabel', html: withUnit(em.y_label, em.y_unit) }), canvas,
-          h('div', { class: 'emu-xlabel', html: withUnit(em.coord.label, em.coord.unit) }))),
-      note);
-    render();
+    body.replaceChildren(
+      h('div', { class: 'emu-controls' }, sliders, h('div', { class: 'emu-buttons' }, reset, keepBtn, clear)),
+      h('div', { class: 'emu-plot' },
+        h('div', { class: 'emu-ylabel', html: withUnit(em.y_label, em.y_unit) }), canvas,
+        h('div', { class: 'emu-xlabel', html: withUnit(em.coord.label, em.coord.unit) }), legend));
+    renderLegend(); render();
     new ResizeObserver(schedule).observe(canvas);
   }
 
-  document.querySelectorAll('.emulator[data-src]').forEach(init);
+  function init(root) {
+    const descs = Array.from(document.querySelectorAll('.emu-desc[data-model]'));
+    const select = h('select', { id: 'emu-relation' }, descs.map(d => h('option', { value: d.dataset.model }, d.dataset.label)));
+    const body = h('div', { class: 'emu-body' }), note = h('p', { class: 'emu-note' });
+    root.replaceChildren(h('div', { class: 'emu-head' }, h('label', { for: select.id }, 'Relation'), select), ...descs, body, note);
+    const cache = {}, kept = {};
+    let current = null;
+
+    async function show(key) {
+      current = key;
+      descs.forEach(d => { d.hidden = d.dataset.model !== key; });
+      try {
+        cache[key] = cache[key] || fetch(root.dataset.base + key + '.json').then(r => r.json()).then(prepare);
+        const em = await cache[key];
+        if (current === key) mount(em, body, note, kept);
+      } catch (e) {
+        if (current === key) { body.replaceChildren(h('p', { class: 'emu-error' }, 'Could not load the emulator.')); note.textContent = ''; }
+      }
+    }
+    select.addEventListener('change', () => show(select.value));
+    show(select.value);
+  }
+
+  document.querySelectorAll('.emulator[data-base]').forEach(init);
 })();

@@ -276,9 +276,22 @@ p { margin: 0 0 1em; }
 .emu-controls { display: flex; flex-direction: column; gap: 8px; font-size: 0.92rem; }
 .emu-slider { display: grid; grid-template-columns: 2.6em 1fr 3.4em; gap: 8px; align-items: center; }
 .emu-slider label { font-family: var(--display); font-weight: 600; }
-.emu-slider input[type=range] { width: 100%; accent-color: var(--cobalt); }
+.emu-slider input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 20px; margin: 0; padding: 0; background: transparent; cursor: pointer; --accent: var(--cobalt); }
+.emu-slider input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--line); }
+.emu-slider input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -6px; border-radius: 50%; background: var(--accent); border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(15,30,56,0.25); }
+.emu-slider input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; background: var(--line); }
+.emu-slider input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(15,30,56,0.25); }
+.emu-slider input[type=range]:focus-visible { outline: none; }
+.emu-slider input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px rgba(30,73,201,0.4); }
+.emu-slider input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px rgba(30,73,201,0.4); }
 .emu-slider output { font-variant-numeric: tabular-nums; text-align: right; color: var(--muted); }
-.emu-controls .cat-btn { align-self: flex-start; margin-top: 6px; }
+.emu-buttons { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.emu-buttons .cat-btn:disabled { opacity: 0.45; cursor: default; }
+.emu-track { position: relative; }
+.emu-track input { display: block; }
+.emu-fid { position: absolute; top: 50%; left: calc(8px + var(--f) * (100% - 16px)); width: 2px; height: 16px; margin: -8px 0 0 -1px; background: var(--ink); opacity: 0.6; border-radius: 1px; pointer-events: none; }
+.emu-slider output.is-changed { color: var(--ink); font-weight: 600; }
+.emu-canvas { user-select: none; }
 .emu-plot { min-width: 0; }
 .emu-canvas { width: 100%; display: block; }
 .emu-ylabel, .emu-xlabel { font-family: var(--display); font-weight: 600; font-size: 0.86rem; color: var(--ink); }
@@ -286,3 +299,14 @@ p { margin: 0 0 1em; }
 .emu-xlabel { text-align: center; padding-left: 62px; }
 .emu-note { font-size: 0.86rem; color: var(--muted); margin: 12px 0 8px; line-height: 1.5; }
 .emu-error { color: #a4231c; }
+.emu-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.emu-head label { font-family: var(--display); font-weight: 600; }
+.emu-head select { font: inherit; font-size: 0.95rem; padding: 7px 8px; border: 1px solid var(--line); border-radius: 4px; background: #fff; color: var(--ink); }
+.emu-desc { max-width: 60em; font-size: 0.95rem; margin-bottom: 14px; }
+.emu-desc p { margin: 0; }
+.emu-legend { list-style: none; margin: 8px 0 0 62px; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.86rem; color: var(--ink); }
+.emu-legend li { display: flex; align-items: center; gap: 7px; }
+.emu-swatch { display: inline-block; width: 20px; height: 3px; border-radius: 2px; background: var(--muted); }
+.emu-swatch.is-dashed { height: 0; background: none; border-top: 2px dashed var(--muted); }
+.emu-remove { width: 18px; height: 18px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: #fff; color: var(--muted); font-size: 0.95rem; line-height: 1; cursor: pointer; display: inline-grid; place-items: center; }
+.emu-remove:hover, .emu-remove:focus-visible { border-color: #a4231c; color: #a4231c; background: #fbeeed; outline: none; }

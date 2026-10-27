@@ -2,21 +2,20 @@
 title: Emulators
 permalink: /emulators/
 wide: true
-lede: The suite's halo statistics as functions of cosmology. Move the sliders to see how the global halo mass function and the concentration–mass relation respond; everything runs in your browser.
+math: true
+lede: Halo statistics from the suite as functions of cosmology.
 ---
 
-Each zoom measures haloes in one environment of one cosmology. The emulators learn those measurements as functions of the cosmological parameters and the local overdensity, then average over the distribution of overdensities in each cosmology to predict the statistic over the whole universe. The widgets below run a small network distilled from those global predictions, so a curve takes well under a millisecond to recompute.
+The emulators are trained on the zooms as functions of the cosmological parameters and the local overdensity, then averaged over the overdensity distribution of each cosmology to give the global statistic. The widget runs a small network distilled from those predictions. Select a relation and move the sliders; the dashed curve is the fiducial (Planck 2018) cosmology, and the solid curve is coloured by the parameter last changed.
 
-## Halo mass function
+<div class="emulator" data-base="{{ '/assets/data/emulators/' | relative_url }}"><p class="muted">Loading the emulator…</p></div>
 
-The comoving number density of haloes per decade of $$M_{200\mathrm{c}}$$ (SOAP spherical-overdensity masses of HBT-HERONS centrals), from one emulator per snapshot from $$z = 0$$ to $$z \approx 9$$. The upper mass limit falls with redshift as massive haloes become rare in the zooms.
+<div class="emu-desc" data-model="hmf" data-label="Halo mass function" markdown="1">
+Comoving number density of central haloes per decade of $$M_{200\mathrm{c}}$$ (SOAP masses, HBT-HERONS centrals) at snapshots from $$z = 0$$ to $$z \approx 9$$. The upper mass limit falls with redshift.
+</div>
 
-<div class="emulator" data-src="{{ '/assets/data/emulators/hmf.json' | relative_url }}"><p class="muted">Loading the emulator…</p></div>
-
-## Concentration–mass relation
-
-The median and 16–84% range of the NFW concentration $$c_{200\mathrm{c}}$$, from $$V_\mathrm{max}/V_{200\mathrm{c}}$$, of central haloes above $$10^{12}\,h^{-1}\,M_\odot$$ at $$z = 0$$, each environment weighted by its abundance of haloes of that mass.
-
-<div class="emulator" data-src="{{ '/assets/data/emulators/cm.json' | relative_url }}"><p class="muted">Loading the emulator…</p></div>
+<div class="emu-desc" data-model="cm" data-label="Concentration–mass relation" markdown="1">
+Median and 16–84% range of the NFW concentration $$c_{200\mathrm{c}}$$ (from $$V_\mathrm{max}/V_{200\mathrm{c}}$$) of central haloes above $$10^{12}\,h^{-1}\,M_\odot$$ at $$z = 0$$.
+</div>
 
 <script src="{{ '/assets/js/emulator.js' | relative_url }}" defer></script>
