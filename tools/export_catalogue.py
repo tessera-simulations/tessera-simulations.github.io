@@ -7,15 +7,18 @@ Joins three sources into one row per design point:
   ledger      v0tessera_regions.hdf5  region labels
   catalogue   regions.json            realised selection (overdensity, bbox, ...)
   run dirs    <zooms>/P*/R*           status inferred from artefacts on disk
+  archive     <archive>/migration_logs/status.tsv   runs copied to the Durham data archive
 
-Run on a COSMA login node that mounts the zoom scratch area:
+Run on a cosma7 login node that mounts the zoom scratch area and the archive
+(/mnt/dc-love2); README.md has the full command and how to fetch the output:
 
-  python3 tools/export_catalogue.py \
+  python3 export_catalogue.py \
       --suite   $REPO/data/v0tessera.hdf5 \
       --regions $REPO/data/v0tessera_regions.hdf5 \
       --catalogue $META7/regions.json \
       --mapping $REPO/configs/v0tessera_subgrid_mapping.yaml \
-      --zooms   $ZOOMS --out catalogue.json --layers-out layers.json
+      --zooms   $ZOOMS --out catalogue.json --layers-out layers.json \
+      --archive /mnt/dc-love2/data/tessera/v0tessera
 
 Status is inferred purely from which files exist, so re-running is always safe.
 """
@@ -142,12 +145,32 @@ def fof_count(path):
         return None
 
 
+def read_archive(archive):
+    """migration_logs/status.tsv -> {parent_idx: (n_files, GB)} for runs whose last copy is OK."""
+    if archive is None:
+        return {}
+    st = archive / "migration_logs" / "status.tsv"
+    if not st.exists():
+        raise SystemExit(f"{st} not found: run on a login node that mounts the archive, or drop --archive")
+    last = {}
+    for line in st.read_text().splitlines():
+        f = line.split("\t")
+        if len(f) >= 4:
+            last[f[1].strip("/")] = f
+    out = {}
+    for run, f in last.items():
+        m = re.match(r"(\d+) files ([\d.]+) GB", f[3])
+        if f[0] == "OK" and m and re.fullmatch(r"P\d{5}/R0000", run):
+            out[int(run[1:6])] = (int(m[1]), float(m[2]))
+    return out
+
+
 # ---------------------------------------------------------------- run scan
 
 def scan_run(d: Path, fragments):
     """Infer what exists for one zoom run directory."""
     r = dict(ics=False, started=False, swift_done=False, hbt=False, trees=False,
-             masks=False, archived=False, n_snaps=0, shark_layers=0, seds_layers=0,
+             masks=False, archived=False, n_snaps=0, n_soap=0, shark_layers=0, seds_layers=0,
              n_layers=len(fragments), walltime_h=None, n_highres=None,
              n_lowres=None, n_fof_z0=None, machine="")
     if not d.is_dir():
@@ -157,6 +180,7 @@ def scan_run(d: Path, fragments):
     r["ics"] = any(d.glob("zoom_ICS_*.hdf5")) or (d / "music2_zoom.conf_log.txt").exists()
     snaps = sorted(d.glob("snap_[0-9][0-9][0-9][0-9].hdf5"))
     r["n_snaps"] = len(snaps)
+    r["n_soap"] = sum(1 for _ in (d / "soap").glob("halo_properties_*.hdf5"))
     ts = d / "timesteps.txt"
     if ts.exists():
         r["started"] = True
@@ -225,6 +249,10 @@ def main():
     ap.add_argument("--zooms", type=Path, required=True)
     ap.add_argument("--out", type=Path, default=Path("catalogue.json"))
     ap.add_argument("--layers-out", type=Path, default=Path("layers.json"))
+    ap.add_argument("--archive", type=Path, default=None,
+                    help="Suite directory on the Durham archive mount; adds the archive_* columns.")
+    ap.add_argument("--archive-url", default="https://virgo.dur.ac.uk/tessera/tessera/{suite}/zooms/",
+                    help="Public URL of the archive's zooms directory.")
     ap.add_argument("--suite-name", default="v0tessera")
     ap.add_argument("--limit", type=int, default=None, help="Scan only the first N design rows (testing).")
     args = ap.parse_args()
@@ -244,6 +272,7 @@ def main():
 
     cat = json.loads(args.catalogue.read_text())
     realised = {int(r["parent_idx"]): r for r in cat["regions"]}
+    online = read_archive(args.archive)
 
     mapping = read_mapping(args.mapping)
     named = [(i, c) for i, c in enumerate(mapping) if not c["name"].startswith("spare")]
@@ -277,6 +306,7 @@ def main():
         ("walltime_h", "float", "SWIFT wall time", "h", "zoom"),
         ("cpu_hours", "float", "SWIFT CPU time", "core h", "zoom"),
         ("n_snaps", "int", "Snapshots on disk", "", "zoom"),
+        ("n_soap", "int", "SOAP outputs on disk", "", "zoom"),
         ("ics", "bool", "Initial conditions", "", "stage"),
         ("swift_done", "bool", "SWIFT finished", "", "stage"),
         ("hbt", "bool", "HBT-HERONS", "", "stage"),
@@ -286,6 +316,8 @@ def main():
         ("shark_layers", "int", "SHARK layers complete", "", "galaxies"),
         ("seds_layers", "int", "Synthesizer SED layers complete", "", "galaxies"),
         ("machine", "str", "Machine", "", "zoom"),
+        ("archive_files", "int", "Files in the Durham archive", "", "archive"),
+        ("archive_gb", "float", "Data in the Durham archive", "GB", "archive"),
     ] + [(n, "float", n.replace("shark_", "SHARK "), "", "galaxies") for n in gal_names]
 
     rows, layers_out, status_counts = [], {}, {}
@@ -314,9 +346,10 @@ def main():
             sig(ms["highres_particle_mass_1e10msun_h"] * 1e10, 4) if ms else None,
             scan["n_fof_z0"], sig(scan["walltime_h"], 4),
             sig(scan["walltime_h"] * SWIFT_CORES, 4) if scan["walltime_h"] is not None else None,
-            scan["n_snaps"],
+            scan["n_snaps"], scan["n_soap"],
             scan["ics"], scan["swift_done"], scan["hbt"], scan["trees"], scan["masks"],
             scan["n_layers"], scan["shark_layers"], scan["seds_layers"], scan["machine"],
+            *(online.get(j) or (None, None)),
         ] + [sig(v, 5) for v in gal_phys]
         rows.append(row)
         if scan.get("_layers"):
@@ -347,6 +380,8 @@ def main():
         "n_galaxy_layers": len(fragments),
         "levelmax": reg_attrs.get("levelmax"),
         "radius_mpch": 31.0,
+        "archive_url": args.archive_url.format(suite=args.suite_name) if args.archive else None,
+        "n_archived": sum(1 for j in online if j < N),
     }
     cols = [dict(name=n, type=t, label=l, unit=u, group=g) for n, t, l, u, g in columns]
     args.out.write_text(json.dumps({"meta": meta, "columns": cols, "rows": rows}, separators=(",", ":"), allow_nan=False))

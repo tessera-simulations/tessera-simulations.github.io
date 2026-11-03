@@ -14,11 +14,12 @@
     'galaxies': '#0a2a7a',
   };
   const DEFAULT_COLS = ['parent_idx', 'label', 'status', 'Omega_m', 'Omega_b', 'h', 'n_s', 'sigma_8',
-    'w_0', 'w_a', 'target_percentile', 'log10_1p_delta', 'n_highres', 'walltime_h', 'cpu_hours', 'shark_layers', 'seds_layers'];
+    'w_0', 'w_a', 'target_percentile', 'log10_1p_delta', 'n_highres', 'walltime_h', 'cpu_hours', 'shark_layers', 'seds_layers', 'archive_gb'];
   const PRESETS = [
     ['All design points', ''],
     ['Selected regions', 'status != "not selected"'],
     ['Zooms with trees and masks', 'masks'],
+    ['Files in the Durham archive', 'archive_gb > 0'],
     ['All galaxy layers complete', 'n_layers > 0 and seds_layers == n_layers'],
     ['Not yet run', 'status == "selected" or status == "ics"'],
     ['Started, not finished', 'status == "started"'],
@@ -59,6 +60,8 @@
   }
   const colOf = n => cols[colIndex[n]];
   const labelOf = n => (colOf(n) || {}).label || n;
+  const filesUrl = r => meta.archive_url && r[colIndex.archive_gb] != null
+    ? `${meta.archive_url}P${String(r[colIndex.parent_idx]).padStart(5, '0')}/R0000/` : null;
 
   function compileQuery(src) {
     let s = (src || '').trim();
@@ -145,6 +148,7 @@
       vis.map(c => {
         const v = r[colIndex[c.name]];
         if (c.name === 'status') return h('td', null, statusTag(v));
+        if (c.name === 'archive_gb' && filesUrl(r)) return h('td', { class: 'num' }, h('a', { href: filesUrl(r), onclick: e => e.stopPropagation() }, fmt(v, c.type) + ' GB'));
         return h('td', { class: c.type === 'str' ? '' : 'num' }, fmt(v, c.type));
       })));
     set(wrap, h('table', { class: 'cat-table' }, h('thead', null, thead), h('tbody', null, tbody)));
@@ -296,6 +300,7 @@
     set(body, 
       h('h2', null, r[colIndex.label] || `Design row ${pid}`),
       h('p', { class: 'cat-detail-status' }, statusTag(r[colIndex.status]), ' ', h('span', { class: 'muted' }, `parent ${pid}, block ${r[colIndex.block]}`)),
+      filesUrl(r) ? h('p', null, h('a', { class: 'cat-btn', href: filesUrl(r) }, `Files in the Durham archive (${fmt(r[colIndex.archive_gb], 'float')} GB)`)) : null,
       Object.entries(groups).map(([g, items]) => h('section', null, h('h3', null, g),
         h('dl', null, items.map(([c, v]) => h('div', null, h('dt', null, c.label, c.unit ? h('span', { class: 'muted' }, ' ' + c.unit) : null), h('dd', null, fmt(v, c.type))))))),
       h('section', { class: 'cat-layers' }, h('h3', null, 'galaxy layers'), h('p', { class: 'muted' }, 'Loading…')),
@@ -341,7 +346,7 @@
     const qInput = h('input', { type: 'text', name: 'q', value: state.q, spellcheck: 'false', autocomplete: 'off',
       placeholder: 'e.g. Omega_m > 0.3 and status == "galaxies"' });
     const presets = h('select', { 'aria-label': 'Preset filters', onchange: e => { qInput.value = e.target.value; state.q = e.target.value; state.page = 0; applyFilter(); render(); e.target.selectedIndex = 0; } },
-      h('option', { value: '' }, 'Presets…'), PRESETS.map(([k, v]) => h('option', { value: v }, k)));
+      h('option', { value: '' }, 'Presets…'), PRESETS.filter(([, v]) => !v.includes('archive_gb') || 'archive_gb' in colIndex).map(([k, v]) => h('option', { value: v }, k)));
     const form = h('form', { class: 'cat-query', onsubmit: e => { e.preventDefault(); state.q = qInput.value; state.page = 0; applyFilter(); render(); } },
       h('label', { for: 'cat-q' }, 'Filter'), qInput, h('button', { class: 'cat-btn primary', type: 'submit' }, 'Apply'), presets);
     qInput.id = 'cat-q';
