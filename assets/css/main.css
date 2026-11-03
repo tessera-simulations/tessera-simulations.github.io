@@ -195,6 +195,7 @@ p { margin: 0 0 1em; }
 .foot-nav a:hover { color: var(--cobalt); }
 .partners { display: flex; flex-wrap: wrap; align-items: center; gap: 28px; margin: 30px 0 18px; padding-top: 24px; border-top: 1px solid var(--line); }
 .partners img { height: 44px; width: auto; }
+.partners .badge { border-radius: 4px; }
 .fine { color: var(--muted); font-size: 0.85rem; margin: 0; }
 
 /* ---------- run catalogue ---------- */
