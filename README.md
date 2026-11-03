@@ -33,12 +33,35 @@ The Data tab (`data.html`, `assets/js/catalogue.js`) is a client-side viewer ove
 `assets/data/catalogue.json` (one row per design point) and
 `assets/data/layers.json` (per-run galaxy layers). Both are generated on COSMA by
 `tools/export_catalogue.py`, which joins the suite design, the regions ledger,
-`regions.json` and the files present in each zoom run directory. Refresh with
+`regions.json`, the files present in each zoom run directory and the Durham
+archive's copy log. To refresh, run this on a cosma7 login node that mounts
+`/mnt/dc-love2` (login7a does):
 
 ```bash
-bash tools/update_catalogue.sh      # scp script to cosma7, run it, fetch the JSON
+cd /cosma7/data/dp004/dc-love2/codes/tessera
+curl -fsSL https://raw.githubusercontent.com/tessera-simulations/tessera-simulations.github.io/main/tools/export_catalogue.py \
+  -o scripts/export_catalogue_site.py     # the current exporter from this repo
+SITE=/cosma7/data/dp004/dc-love2/data/tessera/v0tessera/site
+python3 scripts/export_catalogue_site.py \
+  --suite data/v0tessera.hdf5 --regions data/v0tessera_regions.hdf5 \
+  --catalogue /cosma7/data/dp004/dc-love2/data/tessera/v0tessera/regions.json \
+  --mapping configs/v0tessera_subgrid_mapping.yaml \
+  --zooms /snap7/scratch/dp004/dc-love2/tessera/v0tessera/zooms \
+  --archive /mnt/dc-love2/data/tessera/v0tessera \
+  --out $SITE/catalogue.json --layers-out $SITE/layers.json
+```
+
+then copy the two files here and publish:
+
+```bash
+SITE=/cosma7/data/dp004/dc-love2/data/tessera/v0tessera/site
+scp cosma7:$SITE/catalogue.json cosma7:$SITE/layers.json assets/data/
 git add assets/data && git commit -m "Update run catalogue" && git push
 ```
+
+`--archive` fills the `archive_*` columns from `migration_logs/status.tsv`, which
+link runs to https://virgo.dur.ac.uk/tessera/ and drive the archive's run list.
+Leave it out and those columns are empty, but the rest of the catalogue is unchanged.
 
 Status is inferred purely from what exists on disk, so re-running is always safe.
 Adding a column means appending to the `columns` list in the exporter and the
