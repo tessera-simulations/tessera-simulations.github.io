@@ -105,4 +105,4 @@ Zoom simulations are contaminated near their boundary by low-resolution particle
 
 ## Pipeline code
 
-The pipeline that generates the design, runs the parents, selects regions, writes zoom initial conditions, submits and post-processes the zooms is a Python package with per-machine profiles. It will be released with the suite paper, after which the design file plus the pipeline is sufficient to regenerate any subset of the suite deterministically. See the [Data](/data/) page.
+The pipeline that generates the design, runs the parents, selects regions, writes zoom initial conditions, submits and post-processes the zooms is a Python package with per-machine profiles. It will be released with the suite paper, after which the design file plus the pipeline is sufficient to regenerate any subset of the suite deterministically. See the [Data products](/data/products/#pipeline-code) page.

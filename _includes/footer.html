@@ -7,7 +7,7 @@
         <p><a href="{{ site.github_org }}">GitHub</a> · <a href="mailto:{{ site.contact_email }}">Contact</a> · <a href="{{ '/news/feed.xml' | relative_url }}">News feed</a></p>
       </div>
       <nav class="foot-nav" aria-label="Footer">
-        {% for item in site.data.navigation %}<a href="{{ item.url | relative_url }}">{{ item.title }}</a>{% endfor %}
+        {% for item in site.data.navigation %}<a href="{% if item.url contains '://' %}{{ item.url }}{% else %}{{ item.url | relative_url }}{% endif %}">{{ item.title }}</a>{% endfor %}
       </nav>
     </div>
     <div class="partners">

@@ -29,8 +29,10 @@ Then open http://localhost:4000.
 
 ## Run catalogue
 
-The Data tab (`data.html`, `assets/js/catalogue.js`) is a client-side viewer over
-`assets/data/catalogue.json` (one row per design point) and
+The run table lives on the Durham data archive (https://virgo.dur.ac.uk/tessera/,
+from the private `public-data-frontend` repo); the Data link in the menu goes there, and
+`data.html` forwards old `/data/?row=N` links. This repo still hosts its data, which the
+archive page reads cross-site: `assets/data/catalogue.json` (one row per design point) and
 `assets/data/layers.json` (per-run galaxy layers). Both are generated on COSMA by
 `tools/export_catalogue.py`, which joins the suite design, the regions ledger,
 `regions.json`, the files present in each zoom run directory and the Durham
@@ -60,9 +62,9 @@ git add assets/data && git commit -m "Update run catalogue" && git push
 ```
 
 `--archive` fills the `archive_*` columns from `migration_logs/status.tsv`, which
-link runs to https://virgo.dur.ac.uk/tessera/ and drive the archive's run list.
+say which runs the archive page offers for download.
 Leave it out and those columns are empty, but the rest of the catalogue is unchanged.
 
 Status is inferred purely from what exists on disk, so re-running is always safe.
 Adding a column means appending to the `columns` list in the exporter and the
-matching value in `row`; the viewer reads the column list from the JSON.
+matching value in `row`; the archive page reads the column list from the JSON.

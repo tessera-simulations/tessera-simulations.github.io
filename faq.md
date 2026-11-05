@@ -47,7 +47,7 @@ body_class: faq
 
 <details>
 <summary>When will the data be public?</summary>
-<p>The first release will accompany the suite paper, which is in preparation. Collaborators can access the catalogues now on request; see the <a href="/data/">Data</a> page.</p>
+<p>The first release will accompany the suite paper, which is in preparation. Collaborators can access the catalogues now on request; see the <a href="https://virgo.dur.ac.uk/tessera/">data archive</a>.</p>
 </details>
 
 <details>

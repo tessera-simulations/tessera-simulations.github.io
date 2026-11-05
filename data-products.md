@@ -5,7 +5,7 @@ lede: What Tessera will release, in what form, and how to request early access w
 wide: true
 ---
 
-<p class="muted"><a href="/data/">Back to the run catalogue</a></p>
+<p class="muted">Every run, with its full record and files to download, is listed in the <a href="https://virgo.dur.ac.uk/tessera/">data archive</a>.</p>
 
 <div class="prose" style="padding-top:0; max-width:46em">
 <h2 style="margin-top:0">Release plan</h2>
@@ -43,7 +43,7 @@ wide: true
 
 <p>The intended use of the suite is to train conditional emulators and integrate them over the overdensity distribution of a parent, which the parent overdensity tables provide for every cosmology in the design. For cosmologies outside the design an Edgeworth model of the overdensity distribution, fitted to all parents, reproduces the width of the distribution to a median of 0.3 per cent. The trained emulators and the Python package that trains and integrates them will be released with the suite paper.</p>
 
-<h2>Pipeline code</h2>
+<h2 id="pipeline-code">Pipeline code</h2>
 
 <p>The pipeline is organised in four stages, each a set of Python drivers that write and submit batch jobs through per-machine profiles:</p>
 
