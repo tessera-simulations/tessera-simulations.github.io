@@ -50,15 +50,28 @@ python3 scripts/export_catalogue_site.py \
   --mapping configs/v0tessera_subgrid_mapping.yaml \
   --zooms /snap7/scratch/dp004/dc-love2/tessera/v0tessera/zooms \
   --archive /mnt/dc-love2/data/tessera/v0tessera \
-  --out $SITE/catalogue.json --layers-out $SITE/layers.json
+  --environment /cosma7/data/dp004/dc-love2/data/tessera/v0tessera/catalogue/environment_v0tessera.hdf5 \
+  --out $SITE/catalogue.json --layers-out $SITE/layers.json --overdensity-out $SITE/overdensity.json
 ```
 
-then copy the two files here and publish:
+then copy the three files here and publish:
 
 ```bash
 SITE=/cosma7/data/dp004/dc-love2/data/tessera/v0tessera/site
-scp cosma7:$SITE/catalogue.json cosma7:$SITE/layers.json assets/data/
+scp cosma7:$SITE/catalogue.json cosma7:$SITE/layers.json cosma7:$SITE/overdensity.json assets/data/
 git add assets/data && git commit -m "Update run catalogue" && git push
+```
+
+`--environment` also writes `$SITE/overdensity.json`, the parents' overdensity model drawn in the
+archive's zoom pop-up. It comes from `catalogue/environment_v0tessera.hdf5`, which the tessera repo's
+`scripts/parent/fit_environment.py` fits from the parents' quantile tables; rerun that when new parents
+are added:
+
+```bash
+cd /cosma7/data/dp004/dc-love2/codes/tessera
+~/cosma7/envs/jax/bin/python scripts/parent/fit_environment.py \
+  --percentiles /cosma7/data/dp004/dc-love2/data/tessera/v0tessera/catalogue/percentiles \
+  --compare 'data/emulators/flow_soap_free_slice_z*_silu.h5'
 ```
 
 `--archive` fills the `archive_*` columns from `migration_logs/status.tsv`, which

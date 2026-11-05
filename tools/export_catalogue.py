@@ -9,6 +9,9 @@ Joins three sources into one row per design point:
   run dirs    <zooms>/P*/R*           status inferred from artefacts on disk
   archive     <archive>/migration_logs/status.tsv   runs copied to the Durham data archive
 
+and, with --environment, writes the parents' overdensity model (environment_v0tessera.hdf5, from the tessera
+repo's scripts/parent/fit_environment.py) as overdensity.json for the archive's run pop-up.
+
 Run on a cosma7 login node that mounts the zoom scratch area and the archive
 (/mnt/dc-love2); README.md has the full command and how to fetch the output:
 
@@ -18,7 +21,8 @@ Run on a cosma7 login node that mounts the zoom scratch area and the archive
       --catalogue $META7/regions.json \
       --mapping $REPO/configs/v0tessera_subgrid_mapping.yaml \
       --zooms   $ZOOMS --out catalogue.json --layers-out layers.json \
-      --archive /mnt/dc-love2/data/tessera/v0tessera
+      --archive /mnt/dc-love2/data/tessera/v0tessera \
+      --environment $META7/catalogue/environment_v0tessera.hdf5 --overdensity-out overdensity.json
 
 Status is inferred purely from which files exist, so re-running is always safe.
 """
@@ -240,6 +244,31 @@ def status_of(selected, r):
 
 # ---------------------------------------------------------------- main
 
+def rounded(a, n=5):
+    """An array as nested lists rounded to n significant digits."""
+    return np.vectorize(lambda v: sig(v, n), otypes=[object])(np.asarray(a, dtype=np.float64)).tolist()
+
+
+def export_overdensity(env_path: Path, out: Path) -> None:
+    """The Edgeworth model grids of fit_environment.py as JSON: for the selection grid and the per-epoch sweep, the
+    scale factors and radii (Mpc/h) of the nodes and, per node, the cubic polynomial in the cosmology (coef
+    (terms, 5), t_mu, t_sig) giving [mu, log sigma, skew, kurt, lam5] of log10(1+delta). The pop-up evaluates it at
+    each run's cosmology and interpolates between nodes as smalt.environment.grid_moments does."""
+    doc = {"x": "log10(1+delta)", "radius_units": "Mpc/h", "params": COSMO}
+    with h5py.File(env_path, "r") as f:
+        doc["created_utc"] = str(f.attrs.get("created_utc", ""))
+        doc["emulator_radii"] = rounded(f.attrs["emulator_radii"]) if "emulator_radii" in f.attrs else []
+        for name in ("selection", "sweep"):
+            g = f[name]
+            names = [p for p in str(g.attrs["param_names"]).split(",") if p]
+            if names != COSMO:
+                raise SystemExit(f"{env_path}:{name} is fitted in {names}, not the catalogue's {COSMO}")
+            doc[name] = {"deg": int(g.attrs["deg"]), "a": rounded(g["a"][...], 6), "radii": rounded(g["radii"][...], 6),
+                         "coef": rounded(g["coef"][...]), "t_mu": rounded(g["t_mu"][...], 7), "t_sig": rounded(g["t_sig"][...], 7)}
+    out.write_text(json.dumps(doc, separators=(",", ":"), allow_nan=False))
+    print("wrote", out, out.stat().st_size // 1024, "KB")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--suite", type=Path, required=True)
@@ -254,6 +283,9 @@ def main():
     ap.add_argument("--archive-url", default="https://virgo.dur.ac.uk/tessera/tessera/{suite}/zooms/",
                     help="Public URL of the archive's zooms directory.")
     ap.add_argument("--suite-name", default="v0tessera")
+    ap.add_argument("--environment", type=Path, default=None,
+                    help="environment_<suite>.hdf5 from fit_environment.py; writes --overdensity-out for the pop-up.")
+    ap.add_argument("--overdensity-out", type=Path, default=Path("overdensity.json"))
     ap.add_argument("--limit", type=int, default=None, help="Scan only the first N design rows (testing).")
     args = ap.parse_args()
 
@@ -388,6 +420,8 @@ def main():
     args.layers_out.write_text(json.dumps({"names": gal_names, "layers": layers_out}, separators=(",", ":")))
     print("status:", status_counts)
     print("wrote", args.out, args.out.stat().st_size // 1024, "KB;", args.layers_out, args.layers_out.stat().st_size // 1024, "KB")
+    if args.environment:
+        export_overdensity(args.environment, args.overdensity_out)
 
 
 if __name__ == "__main__":
