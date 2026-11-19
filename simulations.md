@@ -9,7 +9,7 @@ lede: The numerical specification of the Tessera suite. All zooms share these se
 | Quantity | Value |
 |---|---|
 | Design | 8,192 parents, scrambled Sobol' sequence in 38 dimensions |
-| Parents run | 1,280 |
+| Parents run | 2,048 |
 | Zooms completed | 2,048 (the first two 1,024-point blocks) |
 | Redshift coverage | 140 outputs from z = 23.4 to z = 0; 14 retained |
 | Post-processing | FoF, HBT-HERONS, DHalo trees, SOAP, clean masks, SHARK, Synthesizer |
