@@ -103,6 +103,12 @@ The selected sphere is expanded by the pad and the parent particles within it ar
 
 Zoom simulations are contaminated near their boundary by low-resolution particles. The clean mask removes them, but the clean mask is not by itself a safe counting volume: outside the selection sphere the surviving clean volume is preferentially underdense, which would suppress the mass function by up to a third at cluster masses. Haloes are therefore counted within the 31 Mpc/h selection sphere itself, mapped into the zoom frame and intersected with the clean mask. At z = 0 at least 99.6 per cent of the sphere is clean in every zoom, and the overdensity measured in the zoom matches the parent value used for selection to 0.003 dex.
 
-## Pipeline code
+## Data and code
 
-The pipeline that generates the design, runs the parents, selects regions, writes zoom initial conditions, submits and post-processes the zooms is a Python package with per-machine profiles. It will be released with the suite paper, after which the design file plus the pipeline is sufficient to regenerate any subset of the suite deterministically. See the [Data products](/data/products/#pipeline-code) page.
+Every run, with its record and files, is listed in the [Tessera data archive](https://virgo.dur.ac.uk/tessera/). The catalogues, trained emulators and pipeline code will be released publicly with the suite paper; until then they are available to collaborators on request from [{{ site.contact_email }}](mailto:{{ site.contact_email }}).
+
+- Snapshots are SWIFT HDF5 files in h-free comoving units; the catalogues record the h of each run.
+- Two halo masses are provided: the friends-of-friends mass, and the bound M<sub>200c</sub> of HBT-HERONS centrals.
+- Haloes should be counted in the selection sphere intersected with the clean mask (see [Counting volume](#counting-volume)).
+
+The pipeline that generates the design, runs the parents, selects regions, writes zoom initial conditions, submits and post-processes the zooms is a Python package with per-machine profiles. With the design file it regenerates any subset of the suite deterministically. It will be public on [GitHub]({{ site.github_org }}).
